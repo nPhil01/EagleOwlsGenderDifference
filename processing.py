@@ -102,7 +102,35 @@ class data_processing():
 
         # difference
         delta_distance = abs(round(avg_distance_f-avg_distance_m, 3))
-        print("Difference between sex-based averages is: " +str(delta_distance) + "km")        
+        print("Difference between sex-based averages is: " +str(delta_distance) + "km")
+
+    #def calc_height_differences():
+        ## initiate variables for sex-based height trends 
+        #total_height_m = 0
+        #totel_height_f = 0
+        #count_m = 0
+        #count_f = 0
+        #
+        ##calculate average height by sex 
+        ## male
+        #for feature in layer_points_m:
+        #    total_height_m += feature.getField("height")
+        #    count_m += 1
+        #    
+        #avg_height_m = total_height_m/count_m
+        #print(avg_height_m)
+        #
+        ## female 
+        #for feature in layer_lines_f:
+        #    total_height_f += feature.getField("height")
+        #    count_f += 1
+        #
+        #avg_height_f = total_height_f/count_f
+        #print(avg_height_f)
+        #
+        ## difference
+        #delta_height = abs(round(avg_height_f - avg_height_m, 3))
+        #print("Difference between sex-based averages is: " + str(delta_height) + " m") 
 
 pro = data_processing()
 pro.processing_setup()
