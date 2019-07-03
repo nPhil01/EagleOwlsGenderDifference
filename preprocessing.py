@@ -61,4 +61,3 @@ layerCopy.dataProvider().changeAttributeValues(updates)
 layerCopy.updateFields()
 
 QgsProject.instance().addMapLayer(layerCopy)
-

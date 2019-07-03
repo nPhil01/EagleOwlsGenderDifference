@@ -42,3 +42,7 @@ for feature in layer_f:
     
 avg_distance_f = total_length_f/count_f
 print(avg_distance_f)
+
+# difference
+delta_distance = abs(round(avg_distance_f-avg_distance_m, 3))
+print("Difference between sex-based averages is: " +str(delta_distance) + "km")
