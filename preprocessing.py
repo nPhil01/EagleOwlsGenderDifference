@@ -22,7 +22,7 @@ reduced_data = np.delete(reduced_data,[4,18] ,axis=0, )  # Drop rows with empty 
 ## Define reprojection parameters
 parameter_lines = {'INPUT': '/Users/Basti/Desktop/owls/lines.shp', 'TARGET_CRS': 'EPSG:4647',
     	    'OUTPUT': '/Users/Basti/Desktop/owls/lines_32N.shp'}
-parameters_points = {'INPUT': '/Users/Basti/Desktop/owls/points.shp', 'TARGET_CRS': 'EPSG:4647',
+parameter_points = {'INPUT': '/Users/Basti/Desktop/owls/points.shp', 'TARGET_CRS': 'EPSG:4647',
     	    'OUTPUT': '/Users/Basti/Desktop/owls/points_32N.shp'}
 
 ## Run reprojection
