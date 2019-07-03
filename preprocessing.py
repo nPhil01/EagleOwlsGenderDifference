@@ -8,7 +8,7 @@ from qgis.core import *
 #import processing
 
 #csvPath = "./eagle_owl_csv/eagle_owl.csv"
-csvPath = "C:/Users/Basti/Desktop/owls/eagle_owl.csv"
+csvPath = "/home/niklas/Uni/02_02_secondMaster/pythonGIS/project/EagleOwlsGenderDifference/movebank/eagle_owl/Eagle owl Reinhard Vohwinkel MPIO-reference-data.csv"
 
 ##Preprocess CSV
 with open(csvPath) as csvfile:
@@ -20,10 +20,10 @@ reduced_data = np.delete(reduced_data,[4,18] ,axis=0, )  # Drop rows with empty 
 
 ## Reproject data to UTM 32N
 ## Define reprojection parameters
-parameter_lines = {'INPUT': '/Users/Basti/Desktop/owls/lines.shp', 'TARGET_CRS': 'EPSG:4647',
-    	    'OUTPUT': '/Users/Basti/Desktop/owls/lines_32N.shp'}
-parameters_points = {'INPUT': '/Users/Basti/Desktop/owls/points.shp', 'TARGET_CRS': 'EPSG:4647',
-    	    'OUTPUT': '/Users/Basti/Desktop/owls/points_32N.shp'}
+parameter_lines = {'INPUT': '/home/niklas/Uni/02_02_secondMaster/pythonGIS/project/EagleOwlsGenderDifference/movebank/eagle_owl/Eagle owl Reinhard Vohwinkel MPIO/lines.shp', 'TARGET_CRS': 'EPSG:4647',
+    	    'OUTPUT': '/home/niklas/Uni/02_02_secondMaster/pythonGIS/project/EagleOwlsGenderDifference/movebank/eagle_owl/Eagle owl Reinhard Vohwinkel MPIO/lines_32N.shp'}
+parameter_points = {'INPUT': '/home/niklas/Uni/02_02_secondMaster/pythonGIS/project/EagleOwlsGenderDifference/movebank/eagle_owl/Eagle owl Reinhard Vohwinkel MPIO/points.shp', 'TARGET_CRS': 'EPSG:4647',
+    	    'OUTPUT': '/home/niklas/Uni/02_02_secondMaster/pythonGIS/project/EagleOwlsGenderDifference/movebank/eagle_owl/Eagle owl Reinhard Vohwinkel MPIO/points_32N.shp'}
 
 ## Run reprojection
 processing.run('qgis:reprojectlayer', parameter_lines)
@@ -31,7 +31,7 @@ processing.run('qgis:reprojectlayer', parameter_points)
 
 ##Parsing SHP file and accessing attributes
 #shpFile = "./eagle_owl_shp/lines.shp"
-shpFile = "C:/Users/Basti/Desktop/owls/lines_32N.shp"
+shpFile = "/home/niklas/Uni/02_02_secondMaster/pythonGIS/project/EagleOwlsGenderDifference/movebank/eagle_owl/Eagle owl Reinhard Vohwinkel MPIO/lines_32N.shp"
 layer = QgsVectorLayer(shpFile, "shape:", "ogr")
 layerCopy =  QgsVectorLayer(layer.source(), layer.name(), layer.providerType())
 nAttributes = 0
