@@ -1,14 +1,14 @@
 import os
 import csv
+import qgis.utils
 import numpy as np
 from osgeo import ogr
-import os
 from qgis.core import *
-import qgis.utils
+
 #import processing
 
 #csvPath = "./eagle_owl_csv/eagle_owl.csv"
-csvPath = "C:/Users/Viktor/Desktop/eagle_owl/eagle_owl.csv"
+csvPath = "C:/Users/Basti/Desktop/owls/eagle_owl.csv"
 
 ##Preprocess CSV
 with open(csvPath) as csvfile:
@@ -20,17 +20,15 @@ reduced_data = np.delete(reduced_data,[4,18] ,axis=0, )  # Drop rows with empty 
 
 ## Reproject data to UTM 32N
 ## Define reprojection parameters
-#parameter = {'INPUT': '/Users/user/Desktop/eagle_owl/eagle_owl_shp/lines.shp', 'TARGET_CRS': 'EPSG:4647',
-#                'OUTPUT': '/Users/user/Desktop/eagle_owl/eagle_owl_shp/lines_32N.shp'}
+parameter = {'INPUT': '/Users/Basti/Desktop/owls/lines.shp', 'TARGET_CRS': 'EPSG:4647',
+    	    'OUTPUT': '/Users/Basti/Desktop/owls/lines_32N.shp'}
 
 ## Run reprojection
-#processing.run('qgis:reprojectlayer', parameter)
-
-
+processing.run('qgis:reprojectlayer', parameter)
 
 ##Parsing SHP file and accessing attributes
 #shpFile = "./eagle_owl_shp/lines.shp"
-shpFile = "C:/Users/Viktor/Desktop/eagle_owl/eagle_owl_shp/lines.shp"
+shpFile = "C:/Users/Basti/Desktop/owls/lines_32N.shp"
 layer = QgsVectorLayer(shpFile, "shape:", "ogr")
 layerCopy =  QgsVectorLayer(layer.source(), layer.name(), layer.providerType())
 nAttributes = 0
@@ -63,3 +61,4 @@ layerCopy.dataProvider().changeAttributeValues(updates)
 layerCopy.updateFields()
 
 QgsProject.instance().addMapLayer(layerCopy)
+
