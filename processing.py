@@ -3,14 +3,16 @@ from qgis.core import *
 
 def processing_setup():
     # setting path to reprojected shapefile from pre processing
-    shpFile = "C:/Users/Basti/Desktop/owls/lines_32N.shp"
+    shpFile_lines = "C:/Users/Basti/Desktop/owls/lines_32N.shp"
+    shpFile_points = "C:/Users/Basti/Desktop/owls/points_32N.shp"
 
     # read shapfile
-    layer = QgsVectorLayer(shpFile, "shape:", "ogr")
+    layer_lines = QgsVectorLayer(shpFile_lines, "shape:", "ogr")
+    layer_points = QgsVectorLayer(shpFile_points, "shape:", "ogr")
 
     # make layers only containing fe/-male eagle owls 
-    layer_m =  QgsVectorLayer(layer.source(), layer.name(), layer.providerType())
-    layer_f =  QgsVectorLayer(layer.source(), layer.name(), layer.providerType())
+    layer_m =  QgsVectorLayer(layer_lines.source(), layer_lines.name(), layer_lines.providerType())
+    layer_f =  QgsVectorLayer(layer_lines.source(), layer_lines.name(), layer_lines.providerType())
 
     # build requests to filter for sexes
     request_m = QgsFeatureRequest().setFilterExpression(u'"sex" = \'m\'') 
