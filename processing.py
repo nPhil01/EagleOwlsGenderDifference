@@ -31,7 +31,7 @@ class data_processing():
         request_m = QgsFeatureRequest().setFilterExpression(u'"sex" = \'m\'') 
         request_f = QgsFeatureRequest().setFilterExpression(u'"sex" = \'f\'') 
         
-        request_points = QgsFeatureRequest().setFilterExpression(u'"speed" = \'5\'')
+        request_points = QgsFeatureRequest().setFilterExpression(u'"speed" > \'5\'')
 
         # apply filters to layers
         self.layer_m = self.layer_m.getFeatures(request_m)
@@ -113,40 +113,65 @@ class data_processing():
 
         # difference
         delta_distance = abs(round(avg_distance_f-avg_distance_m, 3))
-        print("Difference between sex-based averages is: " +str(delta_distance) + "km")
-        
-    def calc_flight_time():
-        pass
+        print("Distance difference between sex-based averages is: " +str(delta_distance) + "km")
 
-    def calc_height_differences():
-        pass
-        ## initiate variables for sex-based height trends 
-        #total_height_m = 0
-        #totel_height_f = 0
-        #count_m = 0
-        #count_f = 0
-        #
-        ##calculate average height by sex 
-        ## male
-        #for feature in layer_points_m:
-        #    total_height_m += feature.getField("height")
-        #    count_m += 1
-        #    
-        #avg_height_m = total_height_m/count_m
-        #print(avg_height_m)
-        #
-        ## female 
-        #for feature in layer_lines_f:
-        #    total_height_f += feature.getField("height")
-        #    count_f += 1
-        #
-        #avg_height_f = total_height_f/count_f
-        #print(avg_height_f)
-        #
-        ## difference
-        #delta_height = abs(round(avg_height_f - avg_height_m, 3))
-        #print("Difference between sex-based averages is: " + str(delta_height) + " m") 
+    def calc_height_speed_differences(self):
+        # initiate variables for sex-based height trends 
+        total_height_m = 0
+        total_height_f = 0
+        total_speed_m = 0
+        total_speed_f = 0
+        count_m = 0
+        count_f = 0
+        
+        #calculate average height by sex 
+        # male
+        for feature in self.points:
+            with open(csvPath) as csvfile:
+                data = np.array(list(csv.reader(csvfile, delimiter=",")))
+                
+            reduced_data = data[:,[0,3,4,8,10,]]  #Drop all columns except for declared indices
+            reduced_data = np.delete(reduced_data,[4,18] ,axis=0, )  # Drop rows with empty fields
+            for entry in reduced_data:
+                animalID = feature["ind_ident"][15:19]
+                # male
+                if animalID == entry[0] and str(entry[4]) == 'm':
+                    total_height_m += feature["height"]
+                    total_speed_m += feature["speed"]
+                    count_m += 1
+                    print("male: " + str(count_m))
+                    
+                if animalID == entry[0] and str(entry[4]) == 'f':
+                    total_height_f += feature["height"]
+                    total_speed_f += feature["speed"]
+                    count_f += 1
+                    print("female: " + str(count_f))
+            
+        if count_m > 0:
+            avg_height_m = total_height_m/count_m
+            print("male height: " + str(avg_height_m))
+            avg_speed_m = total_speed_m/count_m
+            print("male speed: " + str(avg_speed_m))
+        else:
+            avg_height_m = 0
+            avg_speed_m = 0
+        
+        if count_f > 0:
+            avg_height_f = total_height_f/count_f
+            print("female height: " + str(avg_height_f))
+            avg_speed_f = total_speed_f/count_f
+            print("female speed: " + str(avg_speed_f))
+        else:
+            avg_height_f = 0
+            avg_speed_f = 0
+        
+        # difference
+        delta_height = abs(round(avg_height_f - avg_height_m, 3))
+        delta_speed = abs(round(avg_speed_f - avg_speed_m, 3))
+        print("Height difference between sex-based averages is: " + str(delta_height) + " m") 
+        print("Speed difference between sex-based averages is: " + str(delta_speed) + " km/h")
 
 pro = data_processing()
 pro.processing_setup()
 pro.calc_distance_differences()
+pro.calc_height_speed_differences()
