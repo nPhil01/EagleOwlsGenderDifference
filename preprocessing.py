@@ -36,8 +36,8 @@ processing.run('qgis:reprojectlayer', parameter_lines)
 processing.run('qgis:reprojectlayer', parameter_points)
 
 ## Parsing SHP file and accessing attributes
-relativeShapeFilePath = "data/shapefiles/lines.shp"
-shpFile = os.path.join(projectPath, relativeFilePath)
+relativeShapeFilePath = "data/shapefiles/lines_32N.shp"
+shpFile = os.path.join(projectPath, relativeShapeFilePath)
 
 #shpFile = "/home/niklas/Uni/02_02_secondMaster/pythonGIS/project/EagleOwlsGenderDifference/movebank/eagle_owl/Eagle owl Reinhard Vohwinkel MPIO/lines_32N.shp"
 layer = QgsVectorLayer(shpFile, "shape:", "ogr")

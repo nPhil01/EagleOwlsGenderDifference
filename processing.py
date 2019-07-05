@@ -25,16 +25,19 @@ class data_processing():
         self.layer_m =  QgsVectorLayer(layer_lines.source(), layer_lines.name(), layer_lines.providerType())
         self.layer_f =  QgsVectorLayer(layer_lines.source(), layer_lines.name(), layer_lines.providerType())
         
-        self.points_m = QgsVectorLayer(layer_points.source(), layer_points.name(), layer_points.providerType())
-        self.points_f = QgsVectorLayer(layer_points.source(), layer_points.name(), layer_points.providerType())
+        self.points = QgsVectorLayer(layer_points.source(), layer_points.name(), layer_points.providerType())
 
         # build requests to filter for sexes
         request_m = QgsFeatureRequest().setFilterExpression(u'"sex" = \'m\'') 
         request_f = QgsFeatureRequest().setFilterExpression(u'"sex" = \'f\'') 
+        
+        request_points = QgsFeatureRequest().setFilterExpression(u'"speed" = \'5\'')
 
         # apply filters to layers
         self.layer_m = self.layer_m.getFeatures(request_m)
         self.layer_f = self.layer_f.getFeatures(request_f)
+        
+        self.points = self.points.getFeatures(request_points)
 
     def calc_distance_differences(self):
         # initiate variables for sex-based trends 
@@ -111,8 +114,12 @@ class data_processing():
         # difference
         delta_distance = abs(round(avg_distance_f-avg_distance_m, 3))
         print("Difference between sex-based averages is: " +str(delta_distance) + "km")
+        
+    def calc_flight_time():
+        pass
 
-    #def calc_height_differences():
+    def calc_height_differences():
+        pass
         ## initiate variables for sex-based height trends 
         #total_height_m = 0
         #totel_height_f = 0
