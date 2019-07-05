@@ -1,13 +1,21 @@
+import os
 import processing
 from qgis.core import *
 from datetime import datetime
 
 
 class data_processing():
+    
     def processing_setup(self):
+        ## Make relative paths available
+        # Takes path of the finalAssignment qgis project
+        projectPath =  QgsProject.instance().fileName()
+        # Removes finalAssignment.gqz from project Path
+        projectPath = projectPath[:-19]
+
         # setting path to reprojected shapefile from pre processing
-        shpFile_lines = "/home/niklas/Uni/02_02_secondMaster/pythonGIS/project/EagleOwlsGenderDifference/movebank/eagle_owl/Eagle owl Reinhard Vohwinkel MPIO/lines_32N.shp"
-        shpFile_points = "/home/niklas/Uni/02_02_secondMaster/pythonGIS/project/EagleOwlsGenderDifference/movebank/eagle_owl/Eagle owl Reinhard Vohwinkel MPIO/points_32N.shp"
+        shpFile_lines = os.path.join(projectPath, "data/shapefiles/lines_32N.shp")
+        shpFile_points = os.path.join(projectPath, "data/shapefiles/points_32N.shp")
 
         # read shapfile
         layer_lines = QgsVectorLayer(shpFile_lines, "shape:", "ogr")

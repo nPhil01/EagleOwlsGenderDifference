@@ -5,38 +5,38 @@ import numpy as np
 from osgeo import ogr
 from qgis.core import *
 
-#import processing
-
-#csvPath = "./eagle_owl_csv/eagle_owl.csv"
-#takes path of the finalAssignment qgis project
+## Make relative paths available
+# Takes path of the finalAssignment qgis project
 projectPath =  QgsProject.instance().fileName()
-# removes finalAssignment.gqz from project Path
-projectPath = projectPath[:-20]
-relativeFilePath = "data/eagle_owl.csv"
+# Removes finalAssignment.gqz from project Path
+projectPath = projectPath[:-19]
+relativeFilePath = "data/csv/eagle_owl.csv"
 csvPath = os.path.join(projectPath, relativeFilePath)
 
 
-##Preprocess CSV
+## Preprocess CSV
 with open(csvPath) as csvfile:
     data = np.array(list(csv.reader(csvfile, delimiter=",")))
-
 
 reduced_data = data[:,[0,3,4,8,10,]]  #Drop all columns except for declared indices
 reduced_data = np.delete(reduced_data,[4,18] ,axis=0, )  # Drop rows with empty fields
 
 ## Reproject data to UTM 32N
 ## Define reprojection parameters
-parameter_lines = {'INPUT': '/Users/Basti/Desktop/owls/lines.shp', 'TARGET_CRS': 'EPSG:4647',
-    	    'OUTPUT': '/Users/Basti/Desktop/owls/lines_32N.shp'}
-parameter_points = {'INPUT': '/Users/Basti/Desktop/owls/points.shp', 'TARGET_CRS': 'EPSG:4647',
-    	    'OUTPUT': '/Users/Basti/Desktop/owls/points_32N.shp'}
+lines_path = os.path.join(projectPath, "data/shapefiles/lines.shp")
+lines_out_path = os.path.join(projectPath, "data/shapefiles/lines_32N.shp")
+parameter_lines = {'INPUT': lines_path, 'TARGET_CRS': 'EPSG:4647', 'OUTPUT': lines_out_path}
+
+points_path = os.path.join(projectPath, "data/shapefiles/points.shp")
+points_out_path = os.path.join(projectPath, "data/shapefiles/points_32N.shp")
+parameter_points = {'INPUT': points_path, 'TARGET_CRS': 'EPSG:4647','OUTPUT': points_out_path}
+
 ## Run reprojection
 processing.run('qgis:reprojectlayer', parameter_lines)
 processing.run('qgis:reprojectlayer', parameter_points)
 
-##Parsing SHP file and accessing attributes
-#shpFile = "./eagle_owl_shp/lines.shp"
-relativeShapeFilePath = "data/eagle_owl/eagle_owl/lines.shp"
+## Parsing SHP file and accessing attributes
+relativeShapeFilePath = "data/shapefiles/lines.shp"
 shpFile = os.path.join(projectPath, relativeFilePath)
 
 #shpFile = "/home/niklas/Uni/02_02_secondMaster/pythonGIS/project/EagleOwlsGenderDifference/movebank/eagle_owl/Eagle owl Reinhard Vohwinkel MPIO/lines_32N.shp"
