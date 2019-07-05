@@ -1,5 +1,8 @@
 import os
-import processing
+import csv
+import qgis.utils
+import numpy as np
+from osgeo import ogr
 from qgis.core import *
 from datetime import datetime
 
@@ -118,7 +121,6 @@ class data_processing():
                 updates[feature.id()] = {4: feat_length_year}
                 self.layer_n.dataProvider().changeAttributeValues(updates)
                 self.layer_n.updateFields()
-            
                 
         if count_f > 0:
             avg_distance_f = total_length_f/count_f
@@ -131,6 +133,15 @@ class data_processing():
         print("Distance difference between sex-based averages is: " +str(delta_distance) + "km")
 
     def calc_height_speed_differences(self):
+
+        ## Make relative paths available
+        # Takes path of the finalAssignment qgis project
+        projectPath =  QgsProject.instance().fileName()
+        # Removes finalAssignment.gqz from project Path
+        projectPath = projectPath[:-19]
+        relativeFilePath = "data/csv/eagle_owl.csv"
+        csvPath = os.path.join(projectPath, relativeFilePath)
+
         # initiate variables for sex-based height trends 
         total_height_m = 0
         total_height_f = 0
