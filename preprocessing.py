@@ -23,6 +23,7 @@ reduced_data = np.delete(reduced_data,[4,18] ,axis=0, )  # Drop rows with empty 
 
 ## Reproject data to UTM 32N
 ## Define reprojection parameters
+<<<<<<< Updated upstream
 lines_path = os.path.join(projectPath, "data/shapefiles/lines.shp")
 lines_out_path = os.path.join(projectPath, "data/shapefiles/lines_32N.shp")
 parameter_lines = {'INPUT': lines_path, 'TARGET_CRS': 'EPSG:4647', 'OUTPUT': lines_out_path}
@@ -31,6 +32,12 @@ points_path = os.path.join(projectPath, "data/shapefiles/points.shp")
 points_out_path = os.path.join(projectPath, "data/shapefiles/points_32N.shp")
 parameter_points = {'INPUT': points_path, 'TARGET_CRS': 'EPSG:4647','OUTPUT': points_out_path}
 
+=======
+parameter_lines = {'INPUT': '/home/niklas/Uni/02_02_secondMaster/pythonGIS/project/EagleOwlsGenderDifference/movebank/eagle_owl/Eagle owl Reinhard Vohwinkel MPIO/lines.shp', 'TARGET_CRS': 'EPSG:4647',
+    	    'OUTPUT': '/home/niklas/Uni/02_02_secondMaster/pythonGIS/project/EagleOwlsGenderDifference/movebank/eagle_owl/Eagle owl Reinhard Vohwinkel MPIO/lines_32N.shp'}
+parameter_points = {'INPUT': '/home/niklas/Uni/02_02_secondMaster/pythonGIS/project/EagleOwlsGenderDifference/movebank/eagle_owl/Eagle owl Reinhard Vohwinkel MPIO/points.shp', 'TARGET_CRS': 'EPSG:4647',
+    	    'OUTPUT': '/home/niklas/Uni/02_02_secondMaster/pythonGIS/project/EagleOwlsGenderDifference/movebank/eagle_owl/Eagle owl Reinhard Vohwinkel MPIO/points_32N.shp'}
+>>>>>>> Stashed changes
 ## Run reprojection
 processing.run('qgis:reprojectlayer', parameter_lines)
 processing.run('qgis:reprojectlayer', parameter_points)
