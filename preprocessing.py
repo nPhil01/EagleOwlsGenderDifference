@@ -8,7 +8,12 @@ import qgis.utils
 #import processing
 
 #csvPath = "./eagle_owl_csv/eagle_owl.csv"
-csvPath = "C:/Users/Viktor/Desktop/eagle_owl/eagle_owl.csv"
+#takes path of the finalAssignment qgis project
+projectPath =  QgsProject.instance().fileName()
+# removes finalAssignment.gqz from project Path
+projectPath = projectPath[:-20]
+relativeFilePath = "data/eagle_owl.csv"
+csvPath = os.path.join(projectPath, relativeFilePath)
 
 ##Preprocess CSV
 with open(csvPath) as csvfile:
