@@ -2,6 +2,7 @@ import os
 import csv
 import qgis.utils
 import numpy as np
+import matplotlib as plt
 from osgeo import ogr
 from qgis.core import *
 from datetime import datetime
@@ -156,7 +157,7 @@ class data_processing():
             with open(csvPath) as csvfile:
                 data = np.array(list(csv.reader(csvfile, delimiter=",")))
                 
-            reduced_data = data[:,[0,3,4,8,10,]]  #Drop all columns except for declared indices
+            reduced_data = data[:,[0,3,4,8,10,]]  # Drop all columns except for declared indices
             reduced_data = np.delete(reduced_data,[4,18] ,axis=0, )  # Drop rows with empty fields
             for entry in reduced_data:
                 animalID = feature["ind_ident"][15:19]
@@ -197,19 +198,23 @@ class data_processing():
         print("Height difference between sex-based averages is: " + str(delta_height) + " m") 
         print("Speed difference between sex-based averages is: " + str(delta_speed) + " km/h")
 
-# def make_predictions(input_layer):
-#     for feature in input_layer:
+    def make_predictions(self):
+        x = np.empty((1,1))
+        y = np.empty((1,1))
 
-#     feature.getField
-#     x = lade ids in numpy array
-#     y = lade attribut 1 in np array
+        for feature in self.layer_n.getFeatures():
+            attributes = feature.attributes()
+            ID = attributes[0]
+            Dis = attributes[4]
 
-#     selektiere 10 aus x, y
-
-#     plt.scatter()
+            np.append(x, ID)
+            np.append(y, Dis)
+            
+        print(x)
+        #plt.scatter(x, y)
 
 pro = data_processing()
 pro.processing_setup()
 pro.calc_distance_differences()
-#pro.make_predictions() # braucht den gesamten lines layer als input
+pro.make_predictions() # braucht den gesamten lines layer als input
 pro.calc_height_speed_differences()
