@@ -112,6 +112,13 @@ class data_processing():
                 feat_length_year = feat_length * percentage
                 total_length_f += feat_length_year
                 count_f += 1
+
+                #adding entry to field with yearly_distance
+                updates = {}
+                updates[feature.id()] = {4: feat_length_year}
+                self.layer_n.dataProvider().changeAttributeValues(updates)
+                self.layer_n.updateFields()
+            
                 
         if count_f > 0:
             avg_distance_f = total_length_f/count_f
@@ -193,5 +200,5 @@ class data_processing():
 pro = data_processing()
 pro.processing_setup()
 pro.calc_distance_differences()
-pro.make_predictions() # braucht den gesamten lines layer als input
+#pro.make_predictions() # braucht den gesamten lines layer als input
 pro.calc_height_speed_differences()
