@@ -38,7 +38,6 @@ processing.run('qgis:reprojectlayer', parameter_points)
 relativeShapeFilePath = "data/shapefiles/lines_32N.shp"
 shpFile = os.path.join(projectPath, relativeShapeFilePath)
 
-#shpFile = "/home/niklas/Uni/02_02_secondMaster/pythonGIS/project/EagleOwlsGenderDifference/movebank/eagle_owl/Eagle owl Reinhard Vohwinkel MPIO/lines_32N.shp"
 layer = QgsVectorLayer(shpFile, "shape:", "ogr")
 layerCopy =  QgsVectorLayer(layer.source(), layer.name(), layer.providerType())
 
@@ -133,6 +132,36 @@ for feature in layerCopy.getFeatures():
         animalID = feature["name"][15:19]
         if animalID == entry[0]:
             updates[feature.id()] = {3: str(entry[2])[:-13]}
+layerCopy.dataProvider().changeAttributeValues(updates)
+layerCopy.updateFields()
+
+######
+# Adding yearly_distance field
+#####
+nAttributes = 0
+# First add the required field 
+caps = layerCopy.dataProvider().capabilities()
+
+for feature in layerCopy.getFeatures():
+        nAttributes = len(list(feature))
+        break
+if(nAttributes < 5):
+    if caps & QgsVectorDataProvider.AddAttributes:
+        # We require a String field
+        res = layerCopy.dataProvider().addAttributes(
+            [QgsField("yearly_distance", QVariant.Double)])
+
+# Update to propagate the changes  
+layerCopy.updateFields()
+
+
+# Initiate a variable to hold the attribute values
+updates = {}
+for feature in layerCopy.getFeatures():
+    for entry in reduced_data:
+        animalID = feature["name"][15:19]
+        if animalID == entry[0]:
+            updates[feature.id()] = {4: str(entry[2])[:-13]}
 layerCopy.dataProvider().changeAttributeValues(updates)
 layerCopy.updateFields()
 

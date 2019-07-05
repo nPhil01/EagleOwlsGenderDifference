@@ -72,6 +72,8 @@ class data_processing():
                 feat_length_year = feat_length * percentage
                 total_length_m += feat_length_year
                 count_m += 1
+
+                #adding field with yearly_distance
         
         if count_m > 0:
             avg_distance_m = total_length_m/count_m
@@ -171,7 +173,19 @@ class data_processing():
         print("Height difference between sex-based averages is: " + str(delta_height) + " m") 
         print("Speed difference between sex-based averages is: " + str(delta_speed) + " km/h")
 
+def make_predictions(input_layer):
+    for feature in input_layer:
+
+    feature.getField
+    x = lade ids in numpy array
+    y = lade attribut 1 in np array
+
+    selektiere 10 aus x, y
+
+    plt.scatter()
+
 pro = data_processing()
 pro.processing_setup()
 pro.calc_distance_differences()
+pro.make_predictions() # braucht den gesamten lines layer als input
 pro.calc_height_speed_differences()
