@@ -166,3 +166,13 @@ layerCopy.dataProvider().changeAttributeValues(updates)
 layerCopy.updateFields()
 
 QgsProject.instance().addMapLayer(layerCopy)
+
+deleteFeaturesIds = []
+for feat in layerCopy.getFeatures():
+    attr = feat.attributes()
+    if not attr[1] or not attr[2] or not attr[3]:
+        if caps & layerCopy.dataProvider().DeleteFeatures:
+            deleteFeaturesIds.append(feat.id())
+        
+layerCopy.dataProvider().deleteFeatures(deleteFeaturesIds)
+QgsProject.instance().addMapLayer(layerCopy)
