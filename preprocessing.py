@@ -161,7 +161,7 @@ for feature in layerCopy.getFeatures():
     for entry in reduced_data:
         animalID = feature["name"][15:19]
         if animalID == entry[0]:
-            updates[feature.id()] = {4: str(entry[2])[:-13]}
+            updates[feature.id()] = {4: 0.0}
 layerCopy.dataProvider().changeAttributeValues(updates)
 layerCopy.updateFields()
 

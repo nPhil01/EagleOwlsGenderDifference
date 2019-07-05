@@ -22,8 +22,9 @@ class data_processing():
         layer_points = QgsVectorLayer(shpFile_points, "shape:", "ogr")
 
         # make layers only containing fe/-male eagle owls 
-        self.layer_m =  QgsVectorLayer(layer_lines.source(), layer_lines.name(), layer_lines.providerType())
-        self.layer_f =  QgsVectorLayer(layer_lines.source(), layer_lines.name(), layer_lines.providerType())
+        self.layer_m = QgsVectorLayer(layer_lines.source(), layer_lines.name(), layer_lines.providerType())
+        self.layer_f = QgsVectorLayer(layer_lines.source(), layer_lines.name(), layer_lines.providerType())
+        self.layer_n = QgsVectorLayer(layer_lines.source(), layer_lines.name(), layer_lines.providerType())
         
         self.points = QgsVectorLayer(layer_points.source(), layer_points.name(), layer_points.providerType())
 
@@ -73,7 +74,12 @@ class data_processing():
                 total_length_m += feat_length_year
                 count_m += 1
 
-                #adding field with yearly_distance
+                #adding entry to field with yearly_distance
+                updates = {}
+                updates[feature.id()] = {4: feat_length_year}
+                self.layer_n.dataProvider().changeAttributeValues(updates)
+                self.layer_n.updateFields()
+                        
         
         if count_m > 0:
             avg_distance_m = total_length_m/count_m
@@ -173,16 +179,16 @@ class data_processing():
         print("Height difference between sex-based averages is: " + str(delta_height) + " m") 
         print("Speed difference between sex-based averages is: " + str(delta_speed) + " km/h")
 
-def make_predictions(input_layer):
-    for feature in input_layer:
+# def make_predictions(input_layer):
+#     for feature in input_layer:
 
-    feature.getField
-    x = lade ids in numpy array
-    y = lade attribut 1 in np array
+#     feature.getField
+#     x = lade ids in numpy array
+#     y = lade attribut 1 in np array
 
-    selektiere 10 aus x, y
+#     selektiere 10 aus x, y
 
-    plt.scatter()
+#     plt.scatter()
 
 pro = data_processing()
 pro.processing_setup()
