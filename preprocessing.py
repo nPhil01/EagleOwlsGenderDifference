@@ -32,7 +32,7 @@ points_out_path = os.path.join(projectPath, "data/shapefiles/points_32N.shp")
 parameter_points = {'INPUT': points_path, 'TARGET_CRS': 'EPSG:4647','OUTPUT': points_out_path}
 ## Run reprojection
 processing.run('qgis:reprojectlayer', parameter_lines)
-processing.run('qgis:reprojectlayer', parameter_points)
+#processing.run('qgis:reprojectlayer', parameter_points)
 
 ## Parsing SHP file and accessing attributes
 relativeShapeFilePath = "data/shapefiles/lines_32N.shp"
@@ -165,4 +165,14 @@ for feature in layerCopy.getFeatures():
 layerCopy.dataProvider().changeAttributeValues(updates)
 layerCopy.updateFields()
 
+QgsProject.instance().addMapLayer(layerCopy)
+
+deleteFeaturesIds = []
+for feat in layerCopy.getFeatures():
+    attr = feat.attributes()
+    if not attr[1] or not attr[2] or not attr[3]:
+        if caps & layerCopy.dataProvider().DeleteFeatures:
+            deleteFeaturesIds.append(feat.id())
+        
+layerCopy.dataProvider().deleteFeatures(deleteFeaturesIds)
 QgsProject.instance().addMapLayer(layerCopy)
