@@ -30,13 +30,12 @@ parameter_lines = {'INPUT': lines_path, 'TARGET_CRS': 'EPSG:4647', 'OUTPUT': lin
 points_path = os.path.join(projectPath, "data/shapefiles/points.shp")
 points_out_path = os.path.join(projectPath, "data/shapefiles/points_32N.shp")
 parameter_points = {'INPUT': points_path, 'TARGET_CRS': 'EPSG:4647','OUTPUT': points_out_path}
-
 ## Run reprojection
 processing.run('qgis:reprojectlayer', parameter_lines)
 processing.run('qgis:reprojectlayer', parameter_points)
 
 ## Parsing SHP file and accessing attributes
-relativeShapeFilePath = "data/shapefiles/lines.shp"
+relativeShapeFilePath = "data/shapefiles/lines_32N.shp"
 shpFile = os.path.join(projectPath, relativeShapeFilePath)
 
 layer = QgsVectorLayer(shpFile, "shape:", "ogr")
