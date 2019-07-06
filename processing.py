@@ -2,7 +2,9 @@ import os
 import csv
 import qgis.utils
 import numpy as np
+from numpy import vstack
 import matplotlib as plt
+import matplotlib.pyplot
 from osgeo import ogr
 from qgis.core import *
 from datetime import datetime
@@ -25,7 +27,7 @@ class data_processing():
         layer_lines = QgsVectorLayer(shpFile_lines, "shape:", "ogr")
         layer_points = QgsVectorLayer(shpFile_points, "shape:", "ogr")
 
-        # make layers only containing fe/-male eagle owls 
+        # make layers only containing fe-/male eagle owls 
         self.layer_m = QgsVectorLayer(layer_lines.source(), layer_lines.name(), layer_lines.providerType())
         self.layer_f = QgsVectorLayer(layer_lines.source(), layer_lines.name(), layer_lines.providerType())
         self.layer_n = QgsVectorLayer(layer_lines.source(), layer_lines.name(), layer_lines.providerType())
@@ -43,6 +45,7 @@ class data_processing():
         self.layer_f = self.layer_f.getFeatures(request_f)
         
         self.points = self.points.getFeatures(request_points)
+
 
     def calc_distance_differences(self):
         # initiate variables for sex-based trends 
@@ -133,6 +136,7 @@ class data_processing():
         delta_distance = abs(round(avg_distance_f-avg_distance_m, 3))
         print("Distance difference between sex-based averages is: " +str(delta_distance) + "km")
 
+
     def calc_height_speed_differences(self):
 
         ## Make relative paths available
@@ -165,12 +169,40 @@ class data_processing():
                 if animalID == entry[0] and str(entry[4]) == 'm':
                     total_height_m += feature["height"]
                     total_speed_m += feature["speed"]
+
+                    feature_height = feature["height"]
+                    feature_speed = feature["speed"]
+
+                    #adding entry to field with height and speed
+                    updates = {}
+                   
+                   ######### Hier müssten die Werte zu layerCopy/working_layer weitergegeben werden
+                   ######### Ziel: Alle werte in einer Tabelle
+                    updates[feature.id()] = {5: feature_height}
+                    updates[feature.id()] = {6: feature_speed}
+                    self.layer_n.dataProvider().changeAttributeValues(updates)
+                    self.layer_n.updateFields()
+                    
                     count_m += 1
                     print("male: " + str(count_m))
                     
                 if animalID == entry[0] and str(entry[4]) == 'f':
                     total_height_f += feature["height"]
                     total_speed_f += feature["speed"]
+
+                    feature_height = feature["height"]
+                    feature_speed = feature["speed"]
+
+                    #adding entry to field with height and speed
+                    updates = {}
+
+                    ######### Hier müssten die Werte zu layerCopy/working_layer weitergegeben werden
+                    ######### Ziel: Alle werte in einer Tabelle
+                    updates[feature.id()] = {5: feature_height}
+                    updates[feature.id()] = {6: feature_speed}
+                    self.layer_n.dataProvider().changeAttributeValues(updates)
+                    self.layer_n.updateFields()
+
                     count_f += 1
                     print("female: " + str(count_f))
             
@@ -198,23 +230,36 @@ class data_processing():
         print("Height difference between sex-based averages is: " + str(delta_height) + " m") 
         print("Speed difference between sex-based averages is: " + str(delta_speed) + " km/h")
 
+
     def make_predictions(self):
-        x = np.empty((1,1))
-        y = np.empty((1,1))
+        ID_array = np.arange(self.layer_n.featureCount())
+        distance_array = np.empty(self.layer_n.featureCount())
+        height_array = np.empty(self.layer_n.featureCount())
+        speed_array =np.empty(self.layer_n.featureCount())
+        
+        index = 0
 
         for feature in self.layer_n.getFeatures():
             attributes = feature.attributes()
-            ID = attributes[0]
-            Dis = attributes[4]
-
-            np.append(x, ID)
-            np.append(y, Dis)
             
-        print(x)
-        #plt.scatter(x, y)
+            distance_array[index] = attributes[4]
+            height_array[index] = attributes[5]
+            speed_array[index] = attributes[6]
+            
+            index += 1
+         
+        # Build array containing all statistical data
+        data_array = vstack((ID_array, distance_array, height_array, speed_array))
+        ################################
+        #  ID0       ID1      ID2 
+        #  dis0      dis1     dis2
+        #  height0   height1  height2  
+        #  speed0    speed1   speed1
+        ################################
+
 
 pro = data_processing()
 pro.processing_setup()
 pro.calc_distance_differences()
-pro.make_predictions() # braucht den gesamten lines layer als input
-pro.calc_height_speed_differences()
+pro.make_predictions() 
+#pro.calc_height_speed_differences()
