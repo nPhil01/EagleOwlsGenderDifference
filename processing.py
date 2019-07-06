@@ -231,7 +231,9 @@ class data_processing():
         print("Speed difference between sex-based averages is: " + str(delta_speed) + " km/h")
 
 
+    # Function used to populate data arrays, merge them and make predictions 
     def make_predictions(self):
+        ### Initiate arrays with length equal to number of features
         ID_array = np.arange(self.layer_n.featureCount())
         distance_array = np.empty(self.layer_n.featureCount())
         height_array = np.empty(self.layer_n.featureCount())
@@ -239,16 +241,16 @@ class data_processing():
         
         index = 0
 
+        ### Fill arrays with attributes
         for feature in self.layer_n.getFeatures():
             attributes = feature.attributes()
-            
             distance_array[index] = attributes[4]
             height_array[index] = attributes[5]
             speed_array[index] = attributes[6]
             
             index += 1
          
-        # Build array containing all statistical data
+        ### Build array containing all statistical data
         data_array = vstack((ID_array, distance_array, height_array, speed_array))
         ################################
         #  ID0       ID1      ID2 
@@ -256,6 +258,9 @@ class data_processing():
         #  height0   height1  height2  
         #  speed0    speed1   speed1
         ################################
+
+        ### Bring data_array into horizontal data format
+        data_array = np.transpose(data_array)
 
 
 pro = data_processing()
