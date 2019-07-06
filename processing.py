@@ -235,6 +235,7 @@ class data_processing():
     def make_predictions(self):
         ### Initiate arrays with length equal to number of features
         ID_array = np.arange(self.layer_n.featureCount())
+        sex_array = np.empty(self.layer_n.featureCount())
         distance_array = np.empty(self.layer_n.featureCount())
         height_array = np.empty(self.layer_n.featureCount())
         speed_array =np.empty(self.layer_n.featureCount())
@@ -244,6 +245,8 @@ class data_processing():
         ### Fill arrays with attributes
         for feature in self.layer_n.getFeatures():
             attributes = feature.attributes()
+            
+            sex_array[index] =  attributes[1]
             distance_array[index] = attributes[4]
             height_array[index] = attributes[5]
             speed_array[index] = attributes[6]
@@ -251,12 +254,13 @@ class data_processing():
             index += 1
          
         ### Build array containing all statistical data
-        data_array = vstack((ID_array, distance_array, height_array, speed_array))
+        data_array = vstack((ID_array, sex_array, distance_array, height_array, speed_array))
         ################################
-        #  ID0       ID1      ID2 
-        #  dis0      dis1     dis2
-        #  height0   height1  height2  
-        #  speed0    speed1   speed1
+        #  ID0       ID1      ID2      #
+        #  sex0      sex1     sex2     #
+        #  dis0      dis1     dis2     #
+        #  height0   height1  height2  #
+        #  speed0    speed1   speed1   #
         ################################
 
         ### Bring data_array into horizontal data format
