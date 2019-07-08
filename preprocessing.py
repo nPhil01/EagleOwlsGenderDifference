@@ -7,7 +7,7 @@ from qgis.core import *
 
 class preprocessing():
     
-    def _init_(self):
+    def __init__(self):
         projectPath = QgsProject.instance().fileName()
         self.projectPath = projectPath[:-19]
 
