@@ -6,20 +6,24 @@ from osgeo import ogr
 from qgis.core import *
 
 class preprocessing():
+    
+    def _init_(self):
+        projectPath = QgsProject.instance().fileName()
+        self.projectPath = projectPath[:-19]
 
     # Function used to build relative paths and read and pre-process csv file
     def csv_preprocessing(self):
         
         # Make relative paths available:
         ### Takes path of the finalAssignment qgis project
-        projectPath =  QgsProject.instance().fileName()
+        self.projectPath =  QgsProject.instance().fileName()
 
         ### Removes finalAssignment.gqz from project path
-        projectPath = projectPath[:-19]
+        self.projectPath = self.projectPath[:-19]
         ### Path to local csv file
         relativeFilePath = "data/csv/eagle_owl.csv" 
         ### Concatenate both to form full path
-        csvPath = os.path.join(projectPath, relativeFilePath)
+        csvPath = os.path.join(self.projectPath, relativeFilePath)
 
         # Preprocess CSV
         with open(csvPath) as csvfile:
@@ -36,12 +40,12 @@ class preprocessing():
         
         # Reproject data to UTM 32N
         ### Define reprojection parameters
-        lines_path = os.path.join(projectPath, "data/shapefiles/lines.shp")
-        lines_out_path = os.path.join(projectPath, "data/shapefiles/lines_32N.shp")
+        lines_path = os.path.join(self.projectPath, "data/shapefiles/lines.shp")
+        lines_out_path = os.path.join(self.projectPath, "data/shapefiles/lines_32N.shp")
         parameter_lines = {'INPUT': lines_path, 'TARGET_CRS': 'EPSG:4647', 'OUTPUT': lines_out_path}
 
-        points_path = os.path.join(projectPath, "data/shapefiles/points.shp")
-        points_out_path = os.path.join(projectPath, "data/shapefiles/points_32N.shp")
+        points_path = os.path.join(self.projectPath, "data/shapefiles/points.shp")
+        points_out_path = os.path.join(self.projectPath, "data/shapefiles/points_32N.shp")
         parameter_points = {'INPUT': points_path, 'TARGET_CRS': 'EPSG:4647','OUTPUT': points_out_path}
        
         ## Run reprojection using parameters already defined
@@ -49,18 +53,8 @@ class preprocessing():
         processing.run('qgis:reprojectlayer', parameter_points)
 
 
-    # Function used to add fields to shapefile to enter computated measures
-    def add_fields_to_shapefile(self):
-        
-        # Parsing SHP file and accessing attributes
-        relativeShapeFilePath = "data/shapefiles/lines_32N.shp"
-        shpFile = os.path.join(projectPath, relativeShapeFilePath)
-        layer = QgsVectorLayer(shpFile, "working_layer", "ogr")
-        self.layerCopy =  QgsVectorLayer(layer.source(), layer.name(), layer.providerType())
-
-        #------------------------------------------------------------------------
-        # Adding sex field
-
+    # Function for adding a new column in a shapefile and filling it with data from the csv file.
+    def add_fields_with_value(self, fieldName, fieldIndex, entryIndex): 
         nAttributes = 0
         # First add the required field
         caps = self.layerCopy.dataProvider().capabilities()
@@ -68,11 +62,11 @@ class preprocessing():
         for feature in self.layerCopy.getFeatures():
                 nAttributes = len(list(feature))
                 break
-        if(nAttributes < 2):
+        if(nAttributes <= fieldIndex):
             if caps & QgsVectorDataProvider.AddAttributes:
                 # We require a String field
                 res = self.layerCopy.dataProvider().addAttributes(
-                    [QgsField("sex", QVariant.String)])
+                    [QgsField(fieldName, QVariant.String)])
 
         # Update to propagate the changes
         self.layerCopy.updateFields()
@@ -83,157 +77,58 @@ class preprocessing():
             for entry in self.reduced_data:
                 animalID = feature["name"][15:19]
                 if animalID == entry[0]:
-                    updates[feature.id()] = {1: str(entry[4])}
+                    updates[feature.id()] = {fieldIndex: str(entry[entryIndex])}
         self.layerCopy.dataProvider().changeAttributeValues(updates)
         self.layerCopy.updateFields()
+
+    #Function for creating an empty column in the shapefile.
+    def add_empty_fields(self, fieldName, fieldIndex):
+        nAttributes = 0
+        # First add the required field 
+        caps = self.layerCopy.dataProvider().capabilities()
+
+        for feature in self.layerCopy.getFeatures():
+                nAttributes = len(list(feature))
+                break
+        if(nAttributes <= fieldIndex):
+            if caps & QgsVectorDataProvider.AddAttributes:
+                # We require a String field
+                res = self.layerCopy.dataProvider().addAttributes(
+                    [QgsField(fieldName, QVariant.Double)])
+
+        # Update to propagate the changes  
+        self.layerCopy.updateFields()
+
+
+    # Function used to add fields to shapefile to enter computated measures
+    def add_fields_to_shapefile(self):
+        
+        # Parsing SHP file and accessing attributes
+        relativeShapeFilePath = "data/shapefiles/lines_32N.shp"
+        shpFile = os.path.join(self.projectPath, relativeShapeFilePath)
+        layer = QgsVectorLayer(shpFile, "working_layer", "ogr")
+        self.layerCopy =  QgsVectorLayer(layer.source(), layer.name(), layer.providerType())
 
         #--------------------------------------------------------------------------
+        # Adding sex field
+        self.add_fields_with_value("sex", 1, 4)
+        #--------------------------------------------------------------------------
         # Adding deploy_on field
-        
-        nAttributes = 0
-        # First add the required field 
-        caps = self.layerCopy.dataProvider().capabilities()
-
-        for feature in self.layerCopy.getFeatures():
-                nAttributes = len(list(feature))
-                break
-        if(nAttributes < 3):
-            if caps & QgsVectorDataProvider.AddAttributes:
-                # We require a String field
-                res = self.layerCopy.dataProvider().addAttributes(
-                    [QgsField("deploy_on", QVariant.String)])
-
-        # Update to propagate the changes  
-        self.layerCopy.updateFields()
-
-        # Initiate a variable to hold the attribute values
-        updates = {}
-        for feature in self.layerCopy.getFeatures():
-            for entry in self.reduced_data:
-                animalID = feature["name"][15:19]
-                if animalID == entry[0]:
-                    updates[feature.id()] = {2: str(entry[1])[:-13]}
-        self.layerCopy.dataProvider().changeAttributeValues(updates)
-        self.layerCopy.updateFields()
-
-        #-----------------------------------------------------------------------------
+        self.add_fields_with_value("deploy_on", 2, 1)
+        #--------------------------------------------------------------------------
         # Adding deploy_off field
-       
-        nAttributes = 0
-        # First add the required field 
-        caps = self.layerCopy.dataProvider().capabilities()
-
-        for feature in self.layerCopy.getFeatures():
-                nAttributes = len(list(feature))
-                break
-        if(nAttributes < 4):
-            if caps & QgsVectorDataProvider.AddAttributes:
-                # We require a String field
-                res = self.layerCopy.dataProvider().addAttributes(
-                    [QgsField("deploy_off", QVariant.String)])
-
-        # Update to propagate the changes  
-        self.layerCopy.updateFields()
-
-        # Initiate a variable to hold the attribute values
-        updates = {}
-        for feature in self.layerCopy.getFeatures():
-            for entry in self.reduced_data:
-                animalID = feature["name"][15:19]
-                if animalID == entry[0]:
-                    updates[feature.id()] = {3: str(entry[2])[:-13]}
-        self.layerCopy.dataProvider().changeAttributeValues(updates)
-        self.layerCopy.updateFields()
-
-        #-------------------------------------------------------------------------------
-        # Adding yearly_distance field
-        
-        nAttributes = 0
-        # First add the required field 
-        caps = self.layerCopy.dataProvider().capabilities()
-
-        for feature in self.layerCopy.getFeatures():
-                nAttributes = len(list(feature))
-                break
-        if(nAttributes < 5):
-            if caps & QgsVectorDataProvider.AddAttributes:
-                # We require a String field
-                res = self.layerCopy.dataProvider().addAttributes(
-                    [QgsField("yearly_distance", QVariant.Double)])
-
-        # Update to propagate the changes  
-        self.layerCopy.updateFields()
-
-        # Initiate a variable to hold the attribute values
-        updates = {}
-        for feature in self.layerCopy.getFeatures():
-            for entry in self.reduced_data:
-                animalID = feature["name"][15:19]
-                if animalID == entry[0]:
-                    updates[feature.id()] = {4: 0.0}
-        self.layerCopy.dataProvider().changeAttributeValues(updates)
-        self.layerCopy.updateFields()
-
-        #--------------------------------------------------------------------------------
+        self.add_fields_with_value("deploy_off", 3, 2)
+        #--------------------------------------------------------------------------
+        # Adding yearly distance field
+        self.add_empty_fields("yearly_distance", 4)
+        #--------------------------------------------------------------------------
         # Adding average height field
-        
-        nAttributes = 0
-        # First add the required field 
-        caps = self.layerCopy.dataProvider().capabilities()
-
-        for feature in self.layerCopy.getFeatures():
-                nAttributes = len(list(feature))
-                break
-        if(nAttributes < 6):
-            if caps & QgsVectorDataProvider.AddAttributes:
-                # We require a String field
-                res = self.layerCopy.dataProvider().addAttributes(
-                    [QgsField("avg_height", QVariant.Double)])
-
-        # Update to propagate the changes  
-        self.layerCopy.updateFields()
-
-        # Initiate a variable to hold the attribute values
-        updates = {}
-        for feature in self.layerCopy.getFeatures():
-            for entry in self.reduced_data:
-                animalID = feature["name"][15:19]
-                if animalID == entry[0]:
-                    updates[feature.id()] = {5: 0.0}
-        self.layerCopy.dataProvider().changeAttributeValues(updates)
-        self.layerCopy.updateFields()
-
-        #--------------------------------------------------------------------------------
+        self.add_empty_fields("avg_height", 5)
+        #--------------------------------------------------------------------------
         # Adding average speed field
-        
-        nAttributes = 0
-        # First add the required field 
-        caps = self.layerCopy.dataProvider().capabilities()
+        self.add_empty_fields("avg_speed", 6)
+        #--------------------------------------------------------------------------
 
-        for feature in self.layerCopy.getFeatures():
-                nAttributes = len(list(feature))
-                break
-        if(nAttributes < 7):
-            if caps & QgsVectorDataProvider.AddAttributes:
-                # We require a String field
-                res = self.layerCopy.dataProvider().addAttributes(
-                    [QgsField("avg_speed", QVariant.Double)])
-
-        # Update to propagate the changes  
-        self.layerCopy.updateFields()
-
-        # Initiate a variable to hold the attribute values
-        updates = {}
-        for feature in self.layerCopy.getFeatures():
-            for entry in self.reduced_data:
-                animalID = feature["name"][15:19]
-                if animalID == entry[0]:
-                    updates[feature.id()] = {6: 0.0}
-        self.layerCopy.dataProvider().changeAttributeValues(updates)
-        self.layerCopy.updateFields()
-
-        #--------------------------------------------------------------------------------
-        
         # Add shapefile to project as new layer with edited fields
         QgsProject.instance().addMapLayer(self.layerCopy)
 
