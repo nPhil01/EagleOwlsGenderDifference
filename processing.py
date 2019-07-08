@@ -60,8 +60,10 @@ class data_processing():
             attr = feature.attributes()
             # Deploy on and off must be set
             if attr[2] and attr[3]:
-                deploy_on = datetime.strptime(attr[2], '%Y-%m-%d')
-                deploy_off = datetime.strptime(attr[3], '%Y-%m-%d')
+                deploy_on_str = attr[2][:-13]
+                deploy_off_str = attr[3][:-13]
+                deploy_on = datetime.strptime(deploy_on_str, '%Y-%m-%d')
+                deploy_off = datetime.strptime(deploy_off_str, '%Y-%m-%d')
                 # Calculating the number of days of logging
                 days = deploy_off - deploy_on
                 days = str(days)
@@ -99,8 +101,10 @@ class data_processing():
             attr = feature.attributes()
             # Deploy on and off must be set
             if attr[2] and attr[3]:
-                deploy_on = datetime.strptime(attr[2], '%Y-%m-%d')
-                deploy_off = datetime.strptime(attr[3], '%Y-%m-%d')
+                deploy_on_str = attr[2][:-13]
+                deploy_off_str = attr[3][:-13]
+                deploy_on = datetime.strptime(deploy_on_str, '%Y-%m-%d')
+                deploy_off = datetime.strptime(deploy_off_str, '%Y-%m-%d')
                 # Calculating the number of days of logging
                 days = deploy_off - deploy_on
                 days = str(days)
@@ -155,6 +159,17 @@ class data_processing():
         count_m = 0
         count_f = 0
         
+        index = 0
+        for feat in self.layer_n.getFeatures():
+            index += 1
+            
+        owls = np.zeros((index, 4), dtype=int)
+        
+        index = 0
+        for feat in self.layer_n.getFeatures():
+            owls[index, 0] = feat["name"][15:19]
+            index += 1
+        
         #calculate average height by sex 
         # male
         for feature in self.points:
@@ -172,19 +187,24 @@ class data_processing():
 
                     feature_height = feature["height"]
                     feature_speed = feature["speed"]
+                    
+                    for owl in owls:
+                        if str(owl[0]) == animalID:
+                            owl[1] += feature_height
+                            owl[2] += feature_speed
+                            owl[3] += 1
 
                     #adding entry to field with height and speed
                     updates = {}
                    
-                   ######### Hier müssten die Werte zu layerCopy/working_layer weitergegeben werden
-                   ######### Ziel: Alle werte in einer Tabelle
+                    ######### Hier müssten die Werte zu layerCopy/working_layer weitergegeben werden
+                    ######### Ziel: Alle werte in einer Tabelle
                     updates[feature.id()] = {5: feature_height}
                     updates[feature.id()] = {6: feature_speed}
                     self.layer_n.dataProvider().changeAttributeValues(updates)
                     self.layer_n.updateFields()
                     
                     count_m += 1
-                    print("male: " + str(count_m))
                     
                 if animalID == entry[0] and str(entry[4]) == 'f':
                     total_height_f += feature["height"]
@@ -192,6 +212,12 @@ class data_processing():
 
                     feature_height = feature["height"]
                     feature_speed = feature["speed"]
+                    
+                    for owl in owls:
+                        if str(owl[0]) == animalID:
+                            owl[1] += feature_height
+                            owl[2] += feature_speed
+                            owl[3] += 1
 
                     #adding entry to field with height and speed
                     updates = {}
@@ -204,7 +230,26 @@ class data_processing():
                     self.layer_n.updateFields()
 
                     count_f += 1
-                    print("female: " + str(count_f))
+                    
+        updates = {}
+        for feature in self.layer_n.getFeatures():
+            for owl in owls:
+                avg_h = owl[1]/owl[3]
+                animalID = feature["name"][15:19]
+                if animalID == str(owl[0]):
+                    updates[feature.id()] = {5: str(avg_h)}
+        self.layer_n.dataProvider().changeAttributeValues(updates)
+        self.layer_n.updateFields()
+        
+        updates = {}
+        for feature in self.layer_n.getFeatures():
+            for owl in owls:
+                avg_s = owl[2]/owl[3]
+                animalID = feature["name"][15:19]
+                if animalID == str(owl[0]):
+                    updates[feature.id()] = {6: str(avg_s)}
+        self.layer_n.dataProvider().changeAttributeValues(updates)
+        self.layer_n.updateFields()
             
         if count_m > 0:
             avg_height_m = total_height_m/count_m
@@ -270,5 +315,5 @@ class data_processing():
 pro = data_processing()
 pro.processing_setup()
 pro.calc_distance_differences()
-pro.make_predictions() 
-#pro.calc_height_speed_differences()
+#pro.make_predictions() 
+pro.calc_height_speed_differences()
