@@ -94,7 +94,7 @@ class preprocessing():
             if caps & QgsVectorDataProvider.AddAttributes:
                 # We require a String field
                 res = self.layerCopy.dataProvider().addAttributes(
-                    [QgsField(fieldName, QVariant.Double)])
+                    [QgsField(fieldName, QVariant.String)])
 
         # Update to propagate the changes  
         self.layerCopy.updateFields()
