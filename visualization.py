@@ -30,18 +30,21 @@ for feat in layer.getFeatures():
 data = [maleSpeed, femaleSpeed]
 fig1, ax1 = plt.subplots()
 ax1.set_title('Average Speed of Male and Female')
+ax1.set_ylabel('km/h')
 ax1.boxplot(data)
 plt.xticks([1,2], ["Male", "Female"])
 
 data = [maleDis, femaleDis]
 fig2, ax2 = plt.subplots()
 ax2.set_title('Average Distance travelled per year of Male and Female')
+ax2.set_ylabel('kilometers')
 ax2.boxplot(data)
 plt.xticks([1,2], ["Male", "Female"])
 
 data = [maleHeight, femaleHeight]
 fig3, ax3 = plt.subplots()
 ax3.set_title('Average Height of Male and Female')
+ax3.set_ylabel('meters')
 ax3.boxplot(data)
 plt.xticks([1,2], ["Male", "Female"])
 
