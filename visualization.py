@@ -21,11 +21,11 @@ for feat in layer.getFeatures():
     if(feat["sex"]=="f"):
         femaleSpeed.append(float(feat["avg_speed"]))
         femaleHeight.append(float(feat["avg_height"]))
-        femaleDis.append(float(feat["yearly_dis"]))
+        femaleDis.append(float(feat["yearly_dis"])/1000)
     if(feat["sex"]=="m"):
         maleSpeed.append(float(feat["avg_speed"]))
         maleHeight.append(float(feat["avg_height"]))
-        maleDis.append(float(feat["yearly_dis"]))
+        maleDis.append(float(feat["yearly_dis"])/1000)
 
 data = [maleSpeed, femaleSpeed]
 fig1, ax1 = plt.subplots()
