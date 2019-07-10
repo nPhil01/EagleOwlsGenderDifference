@@ -10,6 +10,8 @@ from datetime import datetime
 
 
 class data_processing():
+
+    data_array = np.array
     
     def processing_setup(self):
         ## Make relative paths available
@@ -276,7 +278,7 @@ class data_processing():
 
 
     # Function used to populate data arrays, merge them and make predictions 
-    def make_predictions(self):
+    def prepare_predictions(self):
         ### Initiate arrays with length equal to number of features
         ID_array = np.arange(self.layer_n.featureCount())
         sex_array = np.empty(self.layer_n.featureCount())
@@ -322,25 +324,37 @@ class data_processing():
         #########################################
 
 
-        def getlinear(x,y):
+    def getlinear(x,y):
 
-            def inner(x1):
-                return m * x1 + b
+        def inner(x1):
+            return m * x1 + b
 
-            m = (len(x) * np.sum(x*y) - np.sum(x) * np.sum(y)) / (len(x)*np.sum(x*x) - np.sum(x) * np.sum(x))
-            b = (np.sum(y) - m *np.sum(x)) / len(x)
-            return inner
+        m = (len(x) * np.sum(x*y) - np.sum(x) * np.sum(y)) / (len(x)*np.sum(x*x) - np.sum(x) * np.sum(x))
+        b = (np.sum(y) - m *np.sum(x)) / len(x)
+        return inner
 
-        predict = getlinear(data_array[:,0], data_array[:,2])
 
-        plt.scatter(data_array[:,0], data_array[:,2])
-        plt.plot(data_array[:,0], predict(data_array[:,0]))
+    def make_predictions(x_array, y_array, id_array):
+        colors = ["blue", "red"]
+        predict = getlinear(x_array, y_array)
+        plt.scatter(x_array, y_array, c = id_array, cmap = plt.colors.ListedColormap(colors))
+        plt.plot(x_array, predict(x_array))
         
         plt.show()
+
+
+    def predict():
+        ### Distance
+        make_predictions(data_array[:,0], data_array[:,2], data_array[:,1])
+        ### Height
+        make_predictions(data_array[:,0], data_array[:,3], data_array[:,1])
+        ### Speed
+        make_predictions(data_array[:,0], data_array[:,4], data_array[:,1])
 
 
 pro = data_processing()
 pro.processing_setup()
 pro.calc_distance_differences()
-pro.make_predictions() 
+pro.prepare_predictions() 
+pro.predict()
 pro.calc_height_speed_differences()
