@@ -5,10 +5,10 @@ This repository contains the collaborative work of Group 1 for the lecture "Pyth
 held by [Junior Professor Dr. Judith Verstegen](https://www.uni-muenster.de/Geoinformatics/institute/staff/index.php/274/Judith_Verstegen) at Westfälische Wilhelms-Universität Münster during the summer semester of 2019. <br>
 
 The members of Group 1 are:<br>
-[Viktor Gorte](https://github.com/vgorte) <br>
-[Sarah Lechler](https://github.com/SarahLechler) <br>
-[Niklas Philippi](https://github.com/nPhil01) <br>
-[Sebastian Holtkamp](https://github.com/sholtkamp) <br>
+* [Viktor Gorte](https://github.com/vgorte) <br>
+* [Sarah Lechler](https://github.com/SarahLechler) <br>
+* [Niklas Philippi](https://github.com/nPhil01) <br>
+* [Sebastian Holtkamp](https://github.com/sholtkamp) <br>
 
 ## Topic:
 The aim of this project was to analyze whether we could find differences in performance of eagle owls based on their sex.
