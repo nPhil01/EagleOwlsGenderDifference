@@ -1,23 +1,12 @@
+'''
+creates space time cube for all owls from shapefile
+'''
+
 import ogr, os
 import time, datetime
 import matplotlib as mpl
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
-
-'''
-create gpx from shapefile Layer (nor from original author)
-'''
-
-# takes path of the finalAssignment qgis project
-projectPath = QgsProject.instance().fileName()
-# removes finalAssignment.gqz from project Path
-projectPath = projectPath[:-20]
-relativeFilePath = "data/shapefiles/points.shp"
-in_path = os.path.join(projectPath, relativeFilePath)
-
-# read shapefile Layer
-driver = ogr.GetDriverByName('ESRI Shapefile')
-data_source = driver.Open(in_path, 0)
 
 '''
 Based on:
@@ -30,6 +19,17 @@ Tracker:Browse and report bugs
 Code repository: https://github.com/Nimrod51/GPX-To-SpaceTimeCube
 Latest stable version: 0.2
 '''
+
+# takes path of the finalAssignment qgis project
+projectPath = QgsProject.instance().fileName()
+# removes finalAssignment.gqz from project Path
+projectPath = projectPath[:-20]
+relativeFilePath = "data/shapefiles/points.shp"
+in_path = os.path.join(projectPath, relativeFilePath)
+
+# read shapefile Layer
+driver = ogr.GetDriverByName('ESRI Shapefile')
+data_source = driver.Open(in_path, 0)
 
 # Open shaepfileLayer
 data_source = driver.Open(in_path, 0)
@@ -66,28 +66,20 @@ except ValueError:
     print ("No time field found")
 
 try:
-    idIndex = schema.index('ind_ident')
-except ValueError:
-    print ("No id field found")
-
-idArray = []
-try:
     for feat in layer:
-        if (animalId == feat.GetField(idIndex)):
-            pt = feat.geometry()
-            x.append(pt.GetX())
-            y.append(pt.GetY())
-            dateTime = feat.GetField(timeIndex)
-            animalId = feat.GetField(idIndex)
+        pt = feat.geometry()
+        x.append(pt.GetX())
+        y.append(pt.GetY())
+        dateTime = feat.GetField(timeIndex)
 
-            try:
-                DT = datetime.datetime.strptime(dateTime, "%Y-%m-%d %H:%M:%S")
-            except ValueError:
-                DT = datetime.datetime.strptime(dateTime, "%Y-%m-%d %H:%M:%S.%f+00")
-            DateTimeArray.append(DT)
-            SSE = time.mktime(DT.timetuple())  # Seconds since epoch
-            elapsedTime.append(SSE)
-            DTArray.append(DT.strftime("%H:%M:%S"))
+        try:
+            DT = datetime.datetime.strptime(dateTime, "%Y-%m-%d %H:%M:%S")
+        except ValueError:
+            DT = datetime.datetime.strptime(dateTime, "%Y-%m-%d %H:%M:%S.%f+00")
+        DateTimeArray.append(DT)
+        SSE = time.mktime(DT.timetuple())  # Seconds since epoch
+        elapsedTime.append(SSE)
+        DTArray.append(DT.strftime("%H:%M:%S"))
 
 except TypeError:
     print ("Time field does contain none or invalid dates")
@@ -99,7 +91,7 @@ title = DateTimeArray[0].strftime("%Y/%m/%d") + " " + DTArray[0] + " to " + Date
 # Extract elapsed time in minutes
 z.append(0)  # First item in elapsedTime array should be 0
 for i in range(1, len(elapsedTime)):
-    z.append((elapsedTime[i] - elapsedTime[0]) / 60)
+    z.append((elapsedTime[i] - elapsedTime[0]) / 86400)
 
 # Plot X,Y,Z
 ax.plot(x, y, z)
@@ -107,7 +99,7 @@ ax.plot(x, y, z)
 # Labels & Plot
 ax.set_xlabel('Longitude')
 ax.set_ylabel('Latitude')
-ax.set_zlabel('Time (Minutes)')
+ax.set_zlabel('Time (Days)')
 ax.legend()
 plt.axis("equal")
 fig.suptitle('Space Time Cube', fontsize=12, fontweight='bold')
