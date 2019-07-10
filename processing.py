@@ -145,7 +145,7 @@ class data_processing():
         else:
             distance_sex = "females"    
         delta_distance = abs(round(avg_distance_f-avg_distance_m, 3))
-        print("Distance difference between sex-based averages is: " +str(delta_distance) + " km, with " + str(distance_sex) + " being in the lead")
+        print("Distance difference between sex-based averages is: " +str(round(delta_distance/1000, 3)) + " km, with " + str(distance_sex) + " being in the lead")
 
 
     def calc_height_speed_differences(self):
