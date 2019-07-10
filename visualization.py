@@ -31,7 +31,7 @@ data = [maleSpeed, femaleSpeed]
 fig1, ax1 = plt.subplots()
 ax1.set_title('Average Speed of Male and Female')
 ax1.set_ylabel('km/h')
-ax1.boxplot(data)
+ax1.boxplot(data, whis = 100)
 plt.xticks([1,2], ["Male", "Female"])
 
 data = [maleDis, femaleDis]

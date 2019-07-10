@@ -3,8 +3,7 @@ import csv
 import qgis.utils
 import numpy as np
 from numpy import vstack
-import matplotlib as plt
-import matplotlib.pyplot
+import matplotlib.pyplot as plt
 from osgeo import ogr
 from qgis.core import *
 from datetime import datetime
@@ -291,7 +290,12 @@ class data_processing():
         for feature in self.layer_n.getFeatures():
             attributes = feature.attributes()
             
-            sex_array[index] =  attributes[1]
+            if attributes[1] in ["m"]:
+                sex_array[index] = 0
+            
+            if attributes[1] in ["f"]:
+                sex_array[index] = 1
+                
             distance_array[index] = attributes[4]
             height_array[index] = attributes[5]
             speed_array[index] = attributes[6]
@@ -308,12 +312,35 @@ class data_processing():
         #  speed0    speed1   speed1   #
         ################################
 
+
         ### Bring data_array into horizontal data format
         data_array = np.transpose(data_array)
+        #########################################
+        #  ID0    sex0   dis0  height0  speed0  #
+        #  ID1    sex1   dis1  height1  speed1  #
+        #  ID2    sex2   dis2  height2  speed2  #
+        #########################################
+
+
+        def getlinear(x,y):
+
+            def inner(x1):
+                return m * x1 + b
+
+            m = (len(x) * np.sum(x*y) - np.sum(x) * np.sum(y)) / (len(x)*np.sum(x*x) - np.sum(x) * np.sum(x))
+            b = (np.sum(y) - m *np.sum(x)) / len(x)
+            return inner
+
+        predict = getlinear(data_array[:,0], data_array[:,2])
+
+        plt.scatter(data_array[:,0], data_array[:,2])
+        plt.plot(data_array[:,0], predict(data_array[:,0]))
+        
+        plt.show()
 
 
 pro = data_processing()
 pro.processing_setup()
 pro.calc_distance_differences()
-#pro.make_predictions() 
+pro.make_predictions() 
 pro.calc_height_speed_differences()
