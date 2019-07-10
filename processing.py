@@ -94,7 +94,7 @@ class data_processing():
         
         if count_m > 0:
             avg_distance_m = total_length_m/count_m
-            print("Die Durchschnittliche Distanz der Männchen pro Jahr ist: " + str(avg_distance_m))
+            print("Average yearly distance per male eagle owl is: " + str(round(avg_distance_m, 3)) + " m")
         else:
             avg_distance_m = 0
 
@@ -134,13 +134,18 @@ class data_processing():
                 
         if count_f > 0:
             avg_distance_f = total_length_f/count_f
-            print("Die Durchschnittliche Distanz der Weibchen pro Jahr ist: " + str(avg_distance_f))
+            print("Average yearly distance per female eagle owl is: " + str(round(avg_distance_f, 3)) + " m")
         else:
             avg_distance_f = 0
 
         # difference
+        distance_sex = ""
+        if avg_distance_f < avg_distance_m:
+            distance_sex = "males"
+        else:
+            distance_sex = "females"    
         delta_distance = abs(round(avg_distance_f-avg_distance_m, 3))
-        print("Distance difference between sex-based averages is: " +str(delta_distance) + "km")
+        print("Distance difference between sex-based averages is: " +str(delta_distance) + " km, with " + str(distance_sex) + " being in the lead")
 
 
     def calc_height_speed_differences(self):
@@ -198,9 +203,6 @@ class data_processing():
 
                     #adding entry to field with height and speed
                     updates = {}
-                   
-                    ######### Hier müssten die Werte zu layerCopy/working_layer weitergegeben werden
-                    ######### Ziel: Alle werte in einer Tabelle
                     updates[feature.id()] = {5: feature_height}
                     updates[feature.id()] = {6: feature_speed}
                     self.layer_n.dataProvider().changeAttributeValues(updates)
@@ -223,9 +225,6 @@ class data_processing():
 
                     #adding entry to field with height and speed
                     updates = {}
-
-                    ######### Hier müssten die Werte zu layerCopy/working_layer weitergegeben werden
-                    ######### Ziel: Alle werte in einer Tabelle
                     updates[feature.id()] = {5: feature_height}
                     updates[feature.id()] = {6: feature_speed}
                     self.layer_n.dataProvider().changeAttributeValues(updates)
@@ -255,27 +254,40 @@ class data_processing():
             
         if count_m > 0:
             avg_height_m = total_height_m/count_m
-            print("male height: " + str(avg_height_m))
+            print("Average male flight height: " + str(round(avg_height_m, 3)) + " m")
             avg_speed_m = total_speed_m/count_m
-            print("male speed: " + str(avg_speed_m))
+            print("Average male speed: " + str(round(avg_speed_m, 3)) + " km/h")
         else:
             avg_height_m = 0
             avg_speed_m = 0
         
         if count_f > 0:
             avg_height_f = total_height_f/count_f
-            print("female height: " + str(avg_height_f))
+            print("Average female flight height: " + str(round(avg_height_f, 3)) + " m")
             avg_speed_f = total_speed_f/count_f
-            print("female speed: " + str(avg_speed_f))
+            print("Average female speed: " + str(round(avg_speed_f, 3)) + " km/h")
         else:
             avg_height_f = 0
             avg_speed_f = 0
         
-        # difference
+        ### Difference height
+        height_sex = ""
+        if avg_height_f < avg_height_m:
+            height_sex = "males"
+        else:
+            height_sex = "females"
         delta_height = abs(round(avg_height_f - avg_height_m, 3))
+        print("Height difference between sex-based averages is: " + str(delta_height) + " m, with " + str(height_sex) + " being in the lead") 
+
+
+        ### Difference speed
+        speed_sex = ""
+        if avg_speed_f < avg_speed_m:
+            speed_sex = "males"
+        else:
+            speed_sex = "females"
         delta_speed = abs(round(avg_speed_f - avg_speed_m, 3))
-        print("Height difference between sex-based averages is: " + str(delta_height) + " m") 
-        print("Speed difference between sex-based averages is: " + str(delta_speed) + " km/h")
+        print("Speed difference between sex-based averages is: " + str(delta_speed) + " km/h, with " + str(speed_sex) + " being in the lead")
 
 
     # Function used to populate data arrays, merge them and make predictions 
@@ -337,22 +349,28 @@ class data_processing():
         return inner
 
 
-    def make_predictions(self, x_array, y_array, id_array):
+    def make_predictions(self, x_array, y_array, id_array, title, x_lab, y_lab):
         colors = ["blue", "red"]
         predict = self.getlinear(x_array, y_array)
         plt.scatter(x_array, y_array, c = id_array, cmap = matplotlib.colors.ListedColormap(colors))
         plt.plot(x_array, predict(x_array))
         
+        ### Set plot attributes
+        plt.suptitle(title)
+        plt.ylabel(y_lab)
+        plt.xlabel(x_lab)
+        
+        ### Show plot
         plt.show()
 
 
     def predict(self):
         ### Distance
-        self.make_predictions(data_array[:,0], data_array[:,2], data_array[:,1])
+        self.make_predictions(data_array[:,0], data_array[:,2], data_array[:,1], "Average distance traveled yearly", "ID", "Distance traveled [m]")
         ### Height
-        self.make_predictions(data_array[:,0], data_array[:,3], data_array[:,1])
+        self.make_predictions(data_array[:,0], data_array[:,3], data_array[:,1], "Average travel height", "ID", "Height [m]")
         ### Speed
-        self.make_predictions(data_array[:,0], data_array[:,4], data_array[:,1])
+        self.make_predictions(data_array[:,0], data_array[:,4], data_array[:,1], "Average travel speed", "ID", "Speed [km/h]")
 
 
 pro = data_processing()
