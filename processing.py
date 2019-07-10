@@ -4,15 +4,16 @@ import qgis.utils
 import numpy as np
 from numpy import vstack
 import matplotlib.pyplot as plt
+import matplotlib
 from osgeo import ogr
 from qgis.core import *
 from datetime import datetime
 
-
 class data_processing():
 
-    data_array = np.array
-    
+    global data_array
+    data_array = np.empty([1, 1])
+
     def processing_setup(self):
         ## Make relative paths available
         # Takes path of the finalAssignment qgis project
@@ -305,8 +306,10 @@ class data_processing():
             index += 1
          
         ### Build array containing all statistical data
+        global data_array
         data_array = vstack((ID_array, sex_array, distance_array, height_array, speed_array))
-        ################################
+    
+       ################################
         #  ID0       ID1      ID2      #
         #  sex0      sex1     sex2     #
         #  dis0      dis1     dis2     #
@@ -324,7 +327,7 @@ class data_processing():
         #########################################
 
 
-    def getlinear(x,y):
+    def getlinear(self, x, y):
 
         def inner(x1):
             return m * x1 + b
@@ -334,22 +337,22 @@ class data_processing():
         return inner
 
 
-    def make_predictions(x_array, y_array, id_array):
+    def make_predictions(self, x_array, y_array, id_array):
         colors = ["blue", "red"]
-        predict = getlinear(x_array, y_array)
-        plt.scatter(x_array, y_array, c = id_array, cmap = plt.colors.ListedColormap(colors))
+        predict = self.getlinear(x_array, y_array)
+        plt.scatter(x_array, y_array, c = id_array, cmap = matplotlib.colors.ListedColormap(colors))
         plt.plot(x_array, predict(x_array))
         
         plt.show()
 
 
-    def predict():
+    def predict(self):
         ### Distance
-        make_predictions(data_array[:,0], data_array[:,2], data_array[:,1])
+        self.make_predictions(data_array[:,0], data_array[:,2], data_array[:,1])
         ### Height
-        make_predictions(data_array[:,0], data_array[:,3], data_array[:,1])
+        self.make_predictions(data_array[:,0], data_array[:,3], data_array[:,1])
         ### Speed
-        make_predictions(data_array[:,0], data_array[:,4], data_array[:,1])
+        self.make_predictions(data_array[:,0], data_array[:,4], data_array[:,1])
 
 
 pro = data_processing()
