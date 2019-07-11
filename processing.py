@@ -12,7 +12,7 @@ from datetime import datetime
 class processing():
 
     def __init__(self):
-        
+
         # Set global variable data_array to make it accessible to all functions of the class processing
         self.data_array = np.empty([1, 1])
         ### Make relative paths available; takes path of the finalAssignment qgis project
@@ -22,7 +22,7 @@ class processing():
 
     # Function used to set up layers and requests
     def processing_setup(self):
-        
+
         ### Setting path to reprojected shapefile from pre processing
         shpFile_lines = os.path.join(projectPath, "data/shapefiles/lines_32N.shp")
         shpFile_points = os.path.join(projectPath, "data/shapefiles/points_32N.shp")
@@ -31,35 +31,35 @@ class processing():
         layer_lines = QgsVectorLayer(shpFile_lines, "shape:", "ogr")
         layer_points = QgsVectorLayer(shpFile_points, "shape:", "ogr")
 
-        ### Make layers only containing fe-/male eagle owls 
+        ### Make layers only containing fe-/male eagle owls
         self.layer_m = QgsVectorLayer(layer_lines.source(), layer_lines.name(), layer_lines.providerType())
         self.layer_f = QgsVectorLayer(layer_lines.source(), layer_lines.name(), layer_lines.providerType())
         self.layer_n = QgsVectorLayer(layer_lines.source(), layer_lines.name(), layer_lines.providerType())
-        
+
         self.points = QgsVectorLayer(layer_points.source(), layer_points.name(), layer_points.providerType())
 
         ### Build requests to filter for sexes and minimum speed
-        request_m = QgsFeatureRequest().setFilterExpression(u'"sex" = \'m\'') 
-        request_f = QgsFeatureRequest().setFilterExpression(u'"sex" = \'f\'') 
-        
+        request_m = QgsFeatureRequest().setFilterExpression(u'"sex" = \'m\'')
+        request_f = QgsFeatureRequest().setFilterExpression(u'"sex" = \'f\'')
+
         request_points = QgsFeatureRequest().setFilterExpression(u'"speed" > \'5\'')
 
         ### Apply filters to layers
         self.layer_m = self.layer_m.getFeatures(request_m)
         self.layer_f = self.layer_f.getFeatures(request_f)
-        
+
         self.points = self.points.getFeatures(request_points)
 
     # Function used to calculate average distance traveled yearly and calculate distances between sexes
     def calc_distance_differences(self):
-        
-        ### Initiate variables for sex-based trends 
+
+        ### Initiate variables for sex-based trends
         total_length_m = 0
         total_length_f = 0
         count_m = 0
         count_f = 0
 
-        # Calculate average distances travelled by sex 
+        # Calculate average distances travelled by sex
         ### Male
         for feature in self.layer_m:
             attr = feature.attributes()
@@ -80,7 +80,7 @@ class processing():
                     days = int(days[:3])
                 elif days[4] == ' ':
                     days = int(days[:4])
-                
+
                 ### Calculating the distance for a year (365 days)
                 feat_length = feature.geometry().length()
                 percentage = 100/(100/365*days)
@@ -93,7 +93,7 @@ class processing():
                 updates[feature.id()] = {4: feat_length_year}
                 self.layer_n.dataProvider().changeAttributeValues(updates)
                 self.layer_n.updateFields()
-                        
+
         ### Printing average per male owl
         if count_m > 0:
             avg_distance_m = total_length_m/count_m
@@ -102,7 +102,7 @@ class processing():
             avg_distance_m = 0
 
 
-        # Female 
+        # Female
         for feature in self.layer_f:
             attr = feature.attributes()
             ### Deploy on and off must be set
@@ -122,7 +122,7 @@ class processing():
                     days = int(days[:3])
                 elif days[4] == ' ':
                     days = int(days[:4])
-                
+
                 ### Calculating the distance for a year (365 days)
                 feat_length = feature.geometry().length()
                 percentage = 100/(100/365*days)
@@ -135,8 +135,8 @@ class processing():
                 updates[feature.id()] = {4: feat_length_year}
                 self.layer_n.dataProvider().changeAttributeValues(updates)
                 self.layer_n.updateFields()
-                
-        ### Printing average per female owl                
+
+        ### Printing average per female owl
         if count_f > 0:
             avg_distance_f = total_length_f/count_f
             print("Average yearly distance per female eagle owl is: " + str(round(avg_distance_f, 3)) + " m")
@@ -150,21 +150,21 @@ class processing():
         if avg_distance_f < avg_distance_m:
             distance_sex = "males"
         else:
-            distance_sex = "females"    
+            distance_sex = "females"
         ### Calculate difference
         delta_distance = abs(round(avg_distance_f-avg_distance_m, 3))
         ### Print result
         print("Distance difference between sex-based averages is: " +str(delta_distance) + " km, with " + str(distance_sex) + " being in the lead")
 
-    # Function used to calculate differences in speed and height 
+    # Function used to calculate differences in speed and height
     def calc_height_speed_differences(self):
-        
+
         ### Define path to CSV within folder structure
         relativeFilePath = "data/csv/eagle_owl.csv"
         ### Append file path and project path
         csvPath = os.path.join(self.projectPath, relativeFilePath)
 
-        ### Initiate variables for sex-based height and speed trends 
+        ### Initiate variables for sex-based height and speed trends
         total_height_m = 0
         total_height_f = 0
         total_speed_m = 0
@@ -176,40 +176,40 @@ class processing():
         ### Count numbers of feature in neutral layer
         for feat in self.layer_n.getFeatures():
             index += 1
-        
-        ### Build numpy array 
+
+        ### Build numpy array
         owls = np.zeros((index, 4), dtype=int)
-        
+
         ### Reset index
         index = 0
         ### Enter names of owls into numpy array
         for feat in self.layer_n.getFeatures():
             owls[index, 0] = feat["name"][15:19]
             index += 1
-        
-        # Calculate average height by sex 
+
+        # Calculate average height by sex
         ## Male
         for feature in self.points:
             with open(csvPath) as csvfile:
                 data = np.array(list(csv.reader(csvfile, delimiter=",")))
-            
+
             ### Drop all columns except for declared indices
-            reduced_data = data[:,[0,3,4,8,10,]]  
-            reduced_data = np.delete(reduced_data,[4,18] ,axis=0, ) 
+            reduced_data = data[:,[0,3,4,8,10,]]
+            reduced_data = np.delete(reduced_data,[4,18] ,axis=0, )
             ### Drop rows with empty fields
             for entry in reduced_data:
                 animalID = feature["ind_ident"][15:19]
-                
+
                 ## Male
                 if animalID == entry[0] and str(entry[4]) == 'm':
                     ### Sum height and speed by adding the current one to prior total
                     total_height_m += feature["height"]
                     total_speed_m += feature["speed"]
 
-                    ### Initiate variables to keep height and speed per owl 
+                    ### Initiate variables to keep height and speed per owl
                     feature_height = feature["height"]
                     feature_speed = feature["speed"]
-                    
+
                     ### Save values in array
                     for owl in owls:
                         if str(owl[0]) == animalID:
@@ -223,9 +223,9 @@ class processing():
                     updates[feature.id()] = {6: feature_speed}
                     self.layer_n.dataProvider().changeAttributeValues(updates)
                     self.layer_n.updateFields()
-                    
+
                     count_m += 1
-                
+
                 ## Female
                 if animalID == entry[0] and str(entry[4]) == 'f':
                     ### Sum height and speed by adding the current one to prior total
@@ -235,7 +235,7 @@ class processing():
                     ### Initiate variables to keep height and speed per owl
                     feature_height = feature["height"]
                     feature_speed = feature["speed"]
-                    
+
                     ### Save values in array
                     for owl in owls:
                         if str(owl[0]) == animalID:
@@ -252,7 +252,7 @@ class processing():
 
                     count_f += 1
 
-        ### Update values for average height in layer            
+        ### Update values for average height in layer
         updates = {}
         for feature in self.layer_n.getFeatures():
             for owl in owls:
@@ -262,7 +262,7 @@ class processing():
                     updates[feature.id()] = {5: str(avg_h)}
         self.layer_n.dataProvider().changeAttributeValues(updates)
         self.layer_n.updateFields()
-        
+
         ### Update values for average speed in layer
         updates = {}
         for feature in self.layer_n.getFeatures():
@@ -273,7 +273,7 @@ class processing():
                     updates[feature.id()] = {6: str(avg_s)}
         self.layer_n.dataProvider().changeAttributeValues(updates)
         self.layer_n.updateFields()
-            
+
         ### Print male average height and speed
         if count_m > 0:
             avg_height_m = total_height_m/count_m
@@ -283,7 +283,7 @@ class processing():
         else:
             avg_height_m = 0
             avg_speed_m = 0
-        
+
         ### Print female average height and speed
         if count_f > 0:
             avg_height_f = total_height_f/count_f
@@ -293,7 +293,7 @@ class processing():
         else:
             avg_height_f = 0
             avg_speed_f = 0
-        
+
         # Difference height
         ### Dynamically determine leading sex
         height_sex = ""
@@ -303,7 +303,7 @@ class processing():
             height_sex = "females"
         ### Calculate difference in height between sexes
         delta_height = abs(round(avg_height_f - avg_height_m, 3))
-        print("Height difference between sex-based averages is: " + str(delta_height) + " m, with " + str(height_sex) + " being in the lead") 
+        print("Height difference between sex-based averages is: " + str(delta_height) + " m, with " + str(height_sex) + " being in the lead")
 
 
         # Difference speed
@@ -318,34 +318,34 @@ class processing():
         print("Speed difference between sex-based averages is: " + str(delta_speed) + " km/h, with " + str(speed_sex) + " being in the lead")
 
 
-    # Function used to populate data arrays, merge them and make predictions 
+    # Function used to populate data arrays, merge them and make predictions
     def prepare_predictions(self):
-       
+
         ### Initiate arrays with length equal to number of features
         ID_array = np.arange(self.layer_n.featureCount())
         sex_array = np.empty(self.layer_n.featureCount())
         distance_array = np.empty(self.layer_n.featureCount())
         height_array = np.empty(self.layer_n.featureCount())
         speed_array =np.empty(self.layer_n.featureCount())
-        
+
         index = 0
 
         ### Fill arrays with attributes
         for feature in self.layer_n.getFeatures():
             attributes = feature.attributes()
-            
+
             if attributes[1] in ["m"]:
                 sex_array[index] = 0
-            
+
             if attributes[1] in ["f"]:
                 sex_array[index] = 1
-                
+
             distance_array[index] = attributes[4]
             height_array[index] = attributes[5]
             speed_array[index] = attributes[6]
-            
+
             index += 1
-         
+
         ### Build array containing all statistical data
         self.data_array = vstack((ID_array, sex_array, distance_array, height_array, speed_array))
        ################################
@@ -367,7 +367,7 @@ class processing():
 
 
     # Function used to calculate linear regression model
-    # Source: https://devarea.com/linear-regression-with-numpy/ 
+    # Source: https://devarea.com/linear-regression-with-numpy/
     def getlinear(self, x, y):
 
         # Closure function used to calculate regression line
@@ -382,11 +382,11 @@ class processing():
 
     # Function used to make predicitions and plot them
     def make_predictions(self, x_array, y_array, sex_array, title, x_lab, y_lab, plotID):
-        
+
         ### Calculate regression line
         predict = self.getlinear(x_array, y_array)
-        
-        
+
+
         ### Use plotID for multiple plots in different popups
         plt.figure(plotID)
         ### Set plot attributes
@@ -416,6 +416,6 @@ class processing():
 pro = processing()
 pro.processing_setup()
 pro.calc_distance_differences()
-pro.prepare_predictions() 
+pro.prepare_predictions()
 pro.predict()
 pro.calc_height_speed_differences()
