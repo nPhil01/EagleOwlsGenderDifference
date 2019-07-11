@@ -4,13 +4,17 @@ import sys
 import processing
 import setup
 
-setup.init()
+# Call static function setup.initiate()
+### Initiate makes scripts and projectPath available
+inititiate()
 
-prep = data_preprocessing()
-prep.csv_preprocessing(projectPath)
-prep.reproject_shapefiles(projectPath)
-prep.add_fields_to_shapefile(projectPath)
-prep.delete_empty_features()
+
+def run_custom_preprocessing():
+    prep = data_preprocessing()
+    prep.csv_preprocessing(projectPath)
+    prep.reproject_shapefiles(projectPath)
+    prep.add_fields_to_shapefile(projectPath)
+    prep.delete_empty_features()
 
 def run_custom_processing():
     pro = data_processing()

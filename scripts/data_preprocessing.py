@@ -1,14 +1,12 @@
 import os
 import csv
+import setup
 import qgis.utils
 import processing
 import numpy as np
 from osgeo import ogr
 from qgis.core import *
 
-import setup
-
-setup.init()
 
 class data_preprocessing():
 
