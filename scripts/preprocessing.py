@@ -5,8 +5,10 @@ import numpy as np
 from osgeo import ogr
 from qgis.core import *
 
+
 class preprocessing():
     
+    # Function used to prepare the relative paths
     def __init__(self):
         projectPath = QgsProject.instance().fileName()
         self.projectPath = projectPath[:-19]
@@ -109,25 +111,24 @@ class preprocessing():
         layer = QgsVectorLayer(shpFile, "working_layer", "ogr")
         self.layerCopy =  QgsVectorLayer(layer.source(), layer.name(), layer.providerType())
 
-        #--------------------------------------------------------------------------
         # Adding sex field
         self.add_fields_with_value("sex", 1, 4)
-        #--------------------------------------------------------------------------
+
         # Adding deploy_on field
         self.add_fields_with_value("deploy_on", 2, 1)
-        #--------------------------------------------------------------------------
+
         # Adding deploy_off field
         self.add_fields_with_value("deploy_off", 3, 2)
-        #--------------------------------------------------------------------------
+
         # Adding yearly distance field
         self.add_empty_fields("yearly_distance", 4)
-        #--------------------------------------------------------------------------
+
         # Adding average height field
         self.add_empty_fields("avg_height", 5)
-        #--------------------------------------------------------------------------
+
         # Adding average speed field
         self.add_empty_fields("avg_speed", 6)
-        #--------------------------------------------------------------------------
+
 
         # Add shapefile to project as new layer with edited fields
         QgsProject.instance().addMapLayer(self.layerCopy)
@@ -147,7 +148,7 @@ class preprocessing():
         QgsProject.instance().addMapLayer(self.layerCopy)
 
 
-# Make onject of class preprocessing and run methods
+# Make object of class preprocessing and run the functions
 prep = preprocessing()
 prep.reproject_shapefiles()
 prep.csv_preprocessing()
