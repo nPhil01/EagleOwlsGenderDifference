@@ -9,19 +9,15 @@ from osgeo import ogr
 from qgis.core import *
 from datetime import datetime
 
-class processing():
+class data_processing():
 
     def __init__(self):
 
         # Set global variable data_array to make it accessible to all functions of the class processing
         self.data_array = np.empty([1, 1])
-        ### Make relative paths available; takes path of the finalAssignment qgis project
-        projectPath = QgsProject.instance().fileName()
-        ### Removes finalAssignment.gqz from project Path
-        self.projectPath = projectPath[:-19]
 
     # Function used to set up layers and requests
-    def processing_setup(self):
+    def setup_processing(self, projectPath):
 
         ### Setting path to reprojected shapefile from pre processing
         shpFile_lines = os.path.join(projectPath, "data/shapefiles/lines_32N.shp")
@@ -157,12 +153,12 @@ class processing():
         print("Distance difference between sex-based averages is: " +str(delta_distance) + " km, with " + str(distance_sex) + " being in the lead")
 
     # Function used to calculate differences in speed and height
-    def calc_height_speed_differences(self):
+    def calculate_height_speed_differences(self, projectPath):
 
         ### Define path to CSV within folder structure
         relativeFilePath = "data/csv/eagle_owl.csv"
         ### Append file path and project path
-        csvPath = os.path.join(self.projectPath, relativeFilePath)
+        csvPath = os.path.join(projectPath, relativeFilePath)
 
         ### Initiate variables for sex-based height and speed trends
         total_height_m = 0
@@ -411,11 +407,3 @@ class processing():
         self.make_predictions(self.data_array[:,0], self.data_array[:,3], self.data_array[:,1], "Average travel height", "ID", "Height [m]", 2)
         ### Speed
         self.make_predictions(self.data_array[:,0], self.data_array[:,4], self.data_array[:,1], "Average travel speed", "ID", "Speed [km/h]", 3)
-
-
-pro = processing()
-pro.processing_setup()
-pro.calc_distance_differences()
-pro.prepare_predictions()
-pro.predict()
-pro.calc_height_speed_differences()

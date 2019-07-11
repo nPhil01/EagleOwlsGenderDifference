@@ -5,13 +5,11 @@ import numpy as np
 from osgeo import ogr
 from qgis.core import *
 
+import setup
 
-class preprocessing():
-    
-    # Function used to prepare the relative paths
-    def __init__(self):
-        projectPath = QgsProject.instance().fileName()
-        self.projectPath = projectPath[:-19]
+setup.init()
+
+class data_preprocessing():
 
     # Function used to build relative paths and read and pre-process csv file
     def csv_preprocessing(self):
@@ -146,11 +144,3 @@ class preprocessing():
                 
         self.layerCopy.dataProvider().deleteFeatures(deleteFeaturesIds)
         QgsProject.instance().addMapLayer(self.layerCopy)
-
-
-# Make object of class preprocessing and run the functions
-prep = preprocessing()
-prep.reproject_shapefiles()
-prep.csv_preprocessing()
-prep.add_fields_to_shapefile()
-prep.delete_empty_features()
