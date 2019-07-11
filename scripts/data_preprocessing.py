@@ -1,29 +1,24 @@
 import os
 import csv
 import qgis.utils
+import processing
 import numpy as np
 from osgeo import ogr
 from qgis.core import *
 
-class preprocessing():
-    
-    def __init__(self):
-        projectPath = QgsProject.instance().fileName()
-        self.projectPath = projectPath[:-19]
+import setup
+
+setup.init()
+
+class data_preprocessing():
 
     # Function used to build relative paths and read and pre-process csv file
-    def csv_preprocessing(self):
-        
-        # Make relative paths available:
-        ### Takes path of the finalAssignment qgis project
-        self.projectPath =  QgsProject.instance().fileName()
+    def csv_preprocessing(self, projectPath):
 
-        ### Removes finalAssignment.gqz from project path
-        self.projectPath = self.projectPath[:-19]
         ### Path to local csv file
         relativeFilePath = "data/csv/eagle_owl.csv" 
         ### Concatenate both to form full path
-        csvPath = os.path.join(self.projectPath, relativeFilePath)
+        csvPath = os.path.join(projectPath, relativeFilePath)
 
         # Preprocess CSV
         with open(csvPath) as csvfile:
@@ -36,16 +31,16 @@ class preprocessing():
 
     # Function used to reproject provided shapefiles to UTM 32N 
     # Allows for proper distance calculations
-    def reproject_shapefiles(self):
+    def reproject_shapefiles(self, projectPath):
         
         # Reproject data to UTM 32N
         ### Define reprojection parameters
-        lines_path = os.path.join(self.projectPath, "data/shapefiles/lines.shp")
-        lines_out_path = os.path.join(self.projectPath, "data/shapefiles/lines_32N.shp")
+        lines_path = os.path.join(projectPath, "data/shapefiles/lines.shp")
+        lines_out_path = os.path.join(projectPath, "data/shapefiles/lines_32N.shp")
         parameter_lines = {'INPUT': lines_path, 'TARGET_CRS': 'EPSG:4647', 'OUTPUT': lines_out_path}
 
-        points_path = os.path.join(self.projectPath, "data/shapefiles/points.shp")
-        points_out_path = os.path.join(self.projectPath, "data/shapefiles/points_32N.shp")
+        points_path = os.path.join(projectPath, "data/shapefiles/points.shp")
+        points_out_path = os.path.join(projectPath, "data/shapefiles/points_32N.shp")
         parameter_points = {'INPUT': points_path, 'TARGET_CRS': 'EPSG:4647','OUTPUT': points_out_path}
        
         ## Run reprojection using parameters already defined
@@ -101,33 +96,32 @@ class preprocessing():
 
 
     # Function used to add fields to shapefile to enter computated measures
-    def add_fields_to_shapefile(self):
+    def add_fields_to_shapefile(self, projectPath):
         
         # Parsing SHP file and accessing attributes
         relativeShapeFilePath = "data/shapefiles/lines_32N.shp"
-        shpFile = os.path.join(self.projectPath, relativeShapeFilePath)
+        shpFile = os.path.join(projectPath, relativeShapeFilePath)
         layer = QgsVectorLayer(shpFile, "working_layer", "ogr")
         self.layerCopy =  QgsVectorLayer(layer.source(), layer.name(), layer.providerType())
 
-        #--------------------------------------------------------------------------
         # Adding sex field
         self.add_fields_with_value("sex", 1, 4)
-        #--------------------------------------------------------------------------
+
         # Adding deploy_on field
         self.add_fields_with_value("deploy_on", 2, 1)
-        #--------------------------------------------------------------------------
+
         # Adding deploy_off field
         self.add_fields_with_value("deploy_off", 3, 2)
-        #--------------------------------------------------------------------------
+
         # Adding yearly distance field
         self.add_empty_fields("yearly_distance", 4)
-        #--------------------------------------------------------------------------
+
         # Adding average height field
         self.add_empty_fields("avg_height", 5)
-        #--------------------------------------------------------------------------
+
         # Adding average speed field
         self.add_empty_fields("avg_speed", 6)
-        #--------------------------------------------------------------------------
+
 
         # Add shapefile to project as new layer with edited fields
         QgsProject.instance().addMapLayer(self.layerCopy)
@@ -146,10 +140,5 @@ class preprocessing():
         self.layerCopy.dataProvider().deleteFeatures(deleteFeaturesIds)
         QgsProject.instance().addMapLayer(self.layerCopy)
 
-
-# Make onject of class preprocessing and run methods
-prep = preprocessing()
-prep.reproject_shapefiles()
-prep.csv_preprocessing()
-prep.add_fields_to_shapefile()
-prep.delete_empty_features()
+prep = data_preprocessing()
+prep.reproject_shapefiles
