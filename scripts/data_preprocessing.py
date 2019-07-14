@@ -1,11 +1,11 @@
 import os
 import csv
-import setup
 import qgis.utils
 import processing
 import numpy as np
 from osgeo import ogr
 from qgis.core import *
+from qgis.PyQt.QtCore import *
 
 
 class data_preprocessing():
@@ -137,6 +137,3 @@ class data_preprocessing():
                 
         self.layerCopy.dataProvider().deleteFeatures(deleteFeaturesIds)
         QgsProject.instance().addMapLayer(self.layerCopy)
-
-prep = data_preprocessing()
-prep.reproject_shapefiles

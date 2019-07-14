@@ -6,7 +6,6 @@ from qgis.core import *
 from sys import platform
 
 
-@staticmethod
 def initiate():
     ### Initiate global variable projectPath
     print("Initiating global variable projectPath")
@@ -50,6 +49,7 @@ def initiate():
         try:
             shutil.copy(copyPath + "__init__.py" , "C:/Users/" + getpass.getuser() + "/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins")
             shutil.copy(copyPath + "setup.py" , "C:/Users/" + getpass.getuser() + "/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins")
+            shutil.copy(copyPath + "analysis.py" , "C:/Users/" + getpass.getuser() + "/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins")
             shutil.copy(copyPath + "data_preprocessing.py" , "C:/Users/" + getpass.getuser() + "/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins")
             shutil.copy(copyPath + "data_processing.py" , "C:/Users/" + getpass.getuser() + "/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins") 
             print("Your scripts were placed in the right directory and renewed.")

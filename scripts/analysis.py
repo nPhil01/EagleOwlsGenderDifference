@@ -1,13 +1,7 @@
-from data_preprocessing import data_preprocessing
-from data_processing import data_processing
 import sys
 import processing
-import setup
-
-# Call static function setup.initiate()
-### Initiate makes scripts and projectPath available
-inititiate()
-
+from data_processing import data_processing
+from data_preprocessing import data_preprocessing
 
 def run_custom_preprocessing():
     prep = data_preprocessing()
@@ -23,3 +17,6 @@ def run_custom_processing():
     pro.prepare_predictions() 
     pro.predict()
     pro.calculate_height_speed_differences(projectPath)
+    
+run_custom_preprocessing()
+run_custom_processing()
