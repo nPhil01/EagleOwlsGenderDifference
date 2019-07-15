@@ -27,7 +27,7 @@ The required data structure to run the code of this repository is:
     * lines.shp 
     * points.shp 
 
-To run the code open finalAssignment.qgz in QGIS and enter the scripts in the python console.
+To run the code open finalAssignment.qgz in QGIS and enter analysis.py into the python console.
 
 ## References:
 [1] Reinhard Vohwinkel et al. in prep. (no year). Eagle owl Reinhard Vohwinkel MPIO <br>
