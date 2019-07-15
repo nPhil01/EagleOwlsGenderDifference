@@ -14,9 +14,9 @@ def run_custom_processing():
     pro = data_processing()
     pro.setup_processing(projectPath)
     pro.calc_distance_differences()
+    pro.calculate_height_speed_differences(projectPath)
     pro.prepare_predictions() 
     pro.predict()
-    pro.calculate_height_speed_differences(projectPath)
     
 run_custom_preprocessing()
 run_custom_processing()

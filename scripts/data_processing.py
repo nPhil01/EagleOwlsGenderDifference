@@ -212,8 +212,7 @@ class data_processing():
                             owl[1] += feature_height
                             owl[2] += feature_speed
                             owl[3] += 1
-
-                    # Adding entry to field with height and speed in layer
+                            
                     updates = {}
                     updates[feature.id()] = {5: feature_height}
                     updates[feature.id()] = {6: feature_speed}
@@ -238,8 +237,7 @@ class data_processing():
                             owl[1] += feature_height
                             owl[2] += feature_speed
                             owl[3] += 1
-
-                    # Adding entry to field with height and speed in layer
+                            
                     updates = {}
                     updates[feature.id()] = {5: feature_height}
                     updates[feature.id()] = {6: feature_speed}
@@ -255,6 +253,7 @@ class data_processing():
                 avg_h = owl[1]/owl[3]
                 animalID = feature["name"][15:19]
                 if animalID == str(owl[0]):
+                    print("animalID == owlM")
                     updates[feature.id()] = {5: str(avg_h)}
         self.layer_n.dataProvider().changeAttributeValues(updates)
         self.layer_n.updateFields()
