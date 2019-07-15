@@ -4,6 +4,7 @@ import matplotlib as mpl
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 
+
 class visualizaiton():
 
     def createBoxplots():
@@ -13,49 +14,138 @@ class visualizaiton():
         shpFile = os.path.join(projectPath, relativeShapeFilePath)
         layer = QgsVectorLayer(shpFile, "working_layer", "ogr")
 
-        #create empty arrays for displaying differences between females and males
+        # create empty arrays for displaying differences between females and males
         femaleSpeed = []
         maleSpeed = []
         femaleHeight = []
         maleHeight = []
         femaleDis = []
         maleDis = []
+        colors = ['blue', 'red']
 
-        #filling arrays
+        # filling arrays
         for feat in layer.getFeatures():
-            if(feat["sex"]=="f"):
+            if (feat["sex"] == "f"):
                 femaleSpeed.append(float(feat["avg_speed"]))
                 femaleHeight.append(float(feat["avg_height"]))
-                femaleDis.append(float(feat["yearly_dis"])/1000)
-            if(feat["sex"]=="m"):
+                femaleDis.append(float(feat["yearly_dis"]) / 1000)
+            if (feat["sex"] == "m"):
                 maleSpeed.append(float(feat["avg_speed"]))
                 maleHeight.append(float(feat["avg_height"]))
-                maleDis.append(float(feat["yearly_dis"])/1000)
+                maleDis.append(float(feat["yearly_dis"]) / 1000)
 
-        #create plot for average speed
+        # create plot for average speed
         data = [maleSpeed, femaleSpeed]
         fig1, ax1 = plt.subplots()
         ax1.set_title('Average Speed of Male and Female')
         ax1.set_ylabel('Average Speed [km/h]')
-        ax1.boxplot(data, whis = 100)
-        plt.xticks([1,2], ["Male", "Female"])
+        ax1.yaxis.grid(True)
 
-        #create plot for average distance
+        ## add patch_artist=True option to ax.boxplot()
+        ## to get fill color
+        bp = ax1.boxplot(data, patch_artist=True, whis=100)
+
+        ## change outline color, fill color and linewidth of the boxes
+        for box in bp['boxes']:
+            # change outline color
+            box.set(color='#7570b3', linewidth=2)
+            # change fill color
+            for patch, color in zip(bp['boxes'], colors):
+                patch.set_facecolor(color)
+
+        ## change color and linewidth of the whiskers
+        for whisker in bp['whiskers']:
+            whisker.set(color='#7570b3', linewidth=1)
+
+        ## change color and linewidth of the caps
+        for cap in bp['caps']:
+            cap.set(color='#7570b3', linewidth=1)
+
+        ## change color and linewidth of the medians
+        for median in bp['medians']:
+            median.set(color='#b2df8a', linewidth=1)
+
+        ## change the style of fliers and their fill
+        for flier in bp['fliers']:
+            flier.set(marker='o', color='#e7298a', alpha=0.5)
+
+        ax1.set_facecolor('xkcd:ivory')
+        plt.xticks([1, 2], ["Male", "Female"])
+
+        # create plot for average distance
         data = [maleDis, femaleDis]
         fig2, ax2 = plt.subplots()
         ax2.set_title('Average Distance travelled per year of Male and Female')
         ax2.set_ylabel('Average distance travelled [km]')
-        ax2.boxplot(data)
-        plt.xticks([1,2], ["Male", "Female"])
+        ax2.yaxis.grid(True)
 
-        #create plot for average height
+        ## add patch_artist=True option to ax.boxplot()
+        ## to get fill color
+        bp = ax2.boxplot(data, patch_artist=True)
+
+        ## change outline color, fill color and linewidth of the boxes
+        for box in bp['boxes']:
+            # change outline color
+            box.set(color='#7570b3', linewidth=2)
+            # change fill color
+            for patch, color in zip(bp['boxes'], colors):
+                patch.set_facecolor(color)
+
+        ## change color and linewidth of the whiskers
+        for whisker in bp['whiskers']:
+            whisker.set(color='#7570b3', linewidth=1)
+
+        ## change color and linewidth of the caps
+        for cap in bp['caps']:
+            cap.set(color='#7570b3', linewidth=1)
+
+        ## change color and linewidth of the medians
+        for median in bp['medians']:
+            median.set(color='#b2df8a', linewidth=1)
+
+        ## change the style of fliers and their fill
+        for flier in bp['fliers']:
+            flier.set(marker='o', color='#e7298a', alpha=0.5)
+        ax2.set_facecolor('xkcd:ivory')
+        plt.xticks([1, 2], ["Male", "Female"])
+
+        # create plot for average height
         data = [maleHeight, femaleHeight]
         fig3, ax3 = plt.subplots()
         ax3.set_title('Average Height of Male and Female')
         ax3.set_ylabel('Average Height [m]')
-        ax3.boxplot(data)
-        plt.xticks([1,2], ["Male", "Female"])
+        ax3.yaxis.grid(True)
 
+        ## add patch_artist=True option to ax.boxplot()
+        ## to get fill color
+        bp = ax3.boxplot(data, patch_artist=True)
+
+        ## change outline color, fill color and linewidth of the boxes
+        for box in bp['boxes']:
+            # change outline color
+            box.set(color='#7570b3', linewidth=2)
+            # change fill color
+            for patch, color in zip(bp['boxes'], colors):
+                patch.set_facecolor(color)
+
+        ## change color and linewidth of the whiskers
+        for whisker in bp['whiskers']:
+            whisker.set(color='#7570b3', linewidth=1)
+
+        ## change color and linewidth of the caps
+        for cap in bp['caps']:
+            cap.set(color='#7570b3', linewidth=1)
+
+        ## change color and linewidth of the medians
+        for median in bp['medians']:
+            median.set(color='#b2df8a', linewidth=1)
+
+        ## change the style of fliers and their fill
+        for flier in bp['fliers']:
+            flier.set(marker='o', color='#e7298a', alpha=0.5)
+
+        plt.xticks([1, 2], ["Male", "Female"])
+        ax3.set_facecolor('xkcd:ivory')
         plt.show()
 
     def createSpaceTimeCubeForAllOwls():
