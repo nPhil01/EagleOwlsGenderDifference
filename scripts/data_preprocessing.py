@@ -32,7 +32,7 @@ class data_preprocessing():
             print("DONE: Preprocessing CSV file.")
         
         except:
-            print("ERROR: Preprocessing CSV file.")
+            raise RuntimeError("Error encountered during preprocessing of CSV file.")
     
 
     # Function used to reproject provided shapefiles to UTM 32N 
@@ -55,10 +55,10 @@ class data_preprocessing():
             processing.run('qgis:reprojectlayer', parameter_lines)
             processing.run('qgis:reprojectlayer', parameter_points)
             
-            print("DONE: Reprojecting Shapefiles.")
+            print("DONE: Reprojecting shapefiles.")
         
         except:
-            print("ERROR: Reprojecting Shapefiles.")
+            raise RuntimeError("Error encountered while reprojecting shapefiles.")
 
 
     # Function for adding a new column in a shapefile and filling it with data from the csv file.
@@ -111,7 +111,7 @@ class data_preprocessing():
     # Function used to add fields to shapefile to enter computated measures
     def add_fields_to_shapefile(self, projectPath):
         
-        print("Adding fields to Shapefile.")
+        print("Adding fields to shapefile.")
         try:
             # Parsing SHP file and accessing attributes
             relativeShapeFilePath = "data/shapefiles/lines_32N.shp"
@@ -136,16 +136,16 @@ class data_preprocessing():
             # Add shapefile to project as new layer with edited fields
             QgsProject.instance().addMapLayer(self.layerCopy)
 
-            print("DONE: Adding fields to Shapefile.")
+            print("DONE: Adding fields to shapefile.")
         
         except:
-            print("ERROR: Adding fields to Shapefile.")
+            raise RuntimeError("Error encountered while adding fields to shapefile.")
 
 
     # Function used to delete entries with missing fields from shapefile
     def delete_empty_features(self):
         
-        print("Deleting empty Features.")
+        print("Deleting empty features.")
         try:
             caps = self.layerCopy.dataProvider().capabilities()
             deleteFeaturesIds = []
@@ -161,4 +161,4 @@ class data_preprocessing():
             print("DONE: Deleting empty Features.")
         
         except:
-            print("ERROR: Deleting empty Features.")
+            raise RuntimeError("Error encountered while deleting empty features.")
