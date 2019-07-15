@@ -20,7 +20,7 @@ def initiate():
 
     ### Determine users OS
     if platform == "darwin" or platform == "linux" or platform == "linux2":
-
+        
         ### Check if folder contiaining scripts already exist, if so delete it and make a new one
         if os.path.exists("/home/" + getpass.getuser() + "/.local/share/QGIS/QGIS3/profiles/default/python/plugins"):
             shutil.rmtree("/home/" + getpass.getuser() + "/.local/share/QGIS/QGIS3/profiles/default/python/plugins")
@@ -29,10 +29,12 @@ def initiate():
         ### Try to copy the scripts so QGIS recognizes them
         try:
             shutil.copy(copyPath + "__init__.py" , "/home/" + getpass.getuser() + "/.local/share/QGIS/QGIS3/profiles/default/python/plugins")
-            shutil.copy(copyPath + "/home/" + getpass.getuser() + "/.local/share/QGIS/QGIS3/profiles/default/python/plugins")
-            shutil.copy(copyPath + "/home/" + getpass.getuser() + "/.local/share/QGIS/QGIS3/profiles/default/python/plugins")
-            shutil.copy(copyPath + "/home/" + getpass.getuser() + "/.local/share/QGIS/QGIS3/profiles/default/python/plugins")
-            #shutil.copy(copyPath + "data_visualization.py" , "/home/USER/.local/share/QGIS/QGIS3/profiles/default/python/plugins)
+            shutil.copy(copyPath + "setup.py" , "/home/" + getpass.getuser() + "/.local/share/QGIS/QGIS3/profiles/default/python/plugins")
+            shutil.copy(copyPath + "analysis.py" , "/home/" + getpass.getuser() + "/.local/share/QGIS/QGIS3/profiles/default/python/plugins")
+            shutil.copy(copyPath + "data_preprocessing.py" , "/home/" + getpass.getuser() + "/.local/share/QGIS/QGIS3/profiles/default/python/plugins")
+            shutil.copy(copyPath + "data_processing.py" , "/home/" + getpass.getuser() + "/.local/share/QGIS/QGIS3/profiles/default/python/plugins")
+            shutil.copy(copyPath + "visualization.py" , "/home/" + getpass.getuser() + "/.local/share/QGIS/QGIS3/profiles/default/python/plugins")
+
             print("Your scripts were placed in the right directory and renewed.")
         except:
             print("Could not place your scripts.")  
@@ -56,3 +58,5 @@ def initiate():
             
         except:
             print("Could not place your scripts.")
+            
+initiate()
