@@ -74,31 +74,64 @@ try:
     from data_processing import data_processing
     from data_preprocessing import data_preprocessing
     from data_visualization import data_visualization
-    print("Custom modules were succesfully imported.")
+    print("Custom modules were succesfully imported.\n")
 except:
     print("Custom modules could not be imported. [IMPORT ERROR]")
 
 
+# Bundeling all preprocessing functions into one
 def run_custom_preprocessing():
-    prep = data_preprocessing()
-    prep.csv_preprocessing(projectPath)
-    prep.reproject_shapefiles(projectPath)
-    prep.add_fields_to_shapefile(projectPath)
-    prep.delete_empty_features()
+    ### handling error in case working_layer already exists in the QGIS project
+    try:
+        print("Preprocessing started.")
+        prep = data_preprocessing()
+        prep.csv_preprocessing(projectPath)
+        prep.reproject_shapefiles(projectPath)
+        prep.add_fields_to_shapefile(projectPath)
+        prep.delete_empty_features()
+        print("Preprocessing finished.\n")
+    except:
+        print("WARNING: working_layer already exists. Preprocessing skipped\n")
 
+# Bundeling all rocessing functions into one
 def run_custom_processing():
-    pro = data_processing()
-    pro.setup_processing(projectPath)
-    pro.calc_distance_differences()
-    pro.calculate_height_speed_differences(projectPath)
-    pro.prepare_predictions() 
-    pro.predict()
+    ### Skip costly computations if shapefile already exists
+    if os.path.exists(projectPath + "/data/shapefiles/working_layer.shp"):
+        print("Processing started.")
+        print("WARNING: Shapefile already exists. Calculating statistical measures skipped")
+        print("Linear regression modeling started.")
+        try:
+            pro = data_processing()
+            pro.setup_processing(projectPath)
+            pro.prepare_predictions() 
+            pro.predict()
+            print("Linear regression modeling finished.\n")
+        except: 
+            print("ERROR: Error in Regression.\n")
+    else:
+        print("Processing started.")
+        try:
+            pro = data_processing()
+            pro.setup_processing(projectPath)
+            pro.calc_distance_differences()
+            pro.calculate_height_speed_differences(projectPath)
+            pro.prepare_predictions() 
+            pro.predict()
+            pro.export_layer(projectPath)
+            print("Processing finished.\n")
+        except:
+            print("ERROR: Error in Processing.\n")
     
 def run_custom_visualization():
-    vis = data_visualization()
-    vis.createBoxplots(projectPath)
-    vis.createSpaceTimeCubeForAllOwls(projectPath)
-            
+    print("Visualization started.")
+    try:
+        vis = data_visualization()
+        vis.createBoxplots(projectPath)
+        vis.createSpaceTimeCubeForAllOwls(projectPath)
+        print("Visualization finished.\n")
+    except:
+        print("ERROR: Error in Visualization.\n")
+
 
 run_custom_preprocessing()
 run_custom_processing()

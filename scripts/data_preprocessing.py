@@ -8,42 +8,57 @@ from qgis.core import *
 from qgis.PyQt.QtCore import *
 
 
+# Class implementing the prepocessing part of the project
 class data_preprocessing():
 
-    # Function used to build relative paths and read and pre-process csv file
+    # Function used to build relative path and read and pre-process csv file
     def csv_preprocessing(self, projectPath):
 
-        ### Path to local csv file
-        relativeFilePath = "data/csv/eagle_owl.csv" 
-        ### Concatenate both to form full path
-        csvPath = os.path.join(projectPath, relativeFilePath)
+        print("Preprocessing CSV file.")
+        try: 
+            ### Path to local csv file
+            relativeFilePath = "data/csv/eagle_owl.csv" 
+            ### Concatenate both to form full path
+            csvPath = os.path.join(projectPath, relativeFilePath)
 
-        # Preprocess CSV
-        with open(csvPath) as csvfile:
-            data = np.array(list(csv.reader(csvfile, delimiter=",")))
-        ### Drop all columns except for declared indices
-        self.reduced_data = data[:,[0,3,4,8,10,]]  
-        ### Drop rows with empty fields
-        self.reduced_data = np.delete(self.reduced_data,[4,18] ,axis=0, )  
+            # Preprocess CSV
+            with open(csvPath) as csvfile:
+                data = np.array(list(csv.reader(csvfile, delimiter=",")))
+            ### Drop all columns except for declared indices
+            self.reduced_data = data[:,[0,3,4,8,10,]]  
+            ### Drop rows with empty fields
+            self.reduced_data = np.delete(self.reduced_data,[4,18] ,axis=0,)  
+            
+            print("DONE: Preprocessing CSV file.")
+        
+        except:
+            print("ERROR: Preprocessing CSV file.")
     
 
     # Function used to reproject provided shapefiles to UTM 32N 
     # Allows for proper distance calculations
     def reproject_shapefiles(self, projectPath):
         
-        # Reproject data to UTM 32N
-        ### Define reprojection parameters
-        lines_path = os.path.join(projectPath, "data/shapefiles/lines.shp")
-        lines_out_path = os.path.join(projectPath, "data/shapefiles/lines_32N.shp")
-        parameter_lines = {'INPUT': lines_path, 'TARGET_CRS': 'EPSG:4647', 'OUTPUT': lines_out_path}
+        print("Reprojecting Shapefiles.")
+        try:
+            # Reproject data to UTM 32N
+            ### Define reprojection parameters
+            lines_path = os.path.join(projectPath, "data/shapefiles/lines.shp")
+            lines_out_path = os.path.join(projectPath, "data/shapefiles/lines_32N.shp")
+            parameter_lines = {'INPUT': lines_path, 'TARGET_CRS': 'EPSG:4647', 'OUTPUT': lines_out_path}
 
-        points_path = os.path.join(projectPath, "data/shapefiles/points.shp")
-        points_out_path = os.path.join(projectPath, "data/shapefiles/points_32N.shp")
-        parameter_points = {'INPUT': points_path, 'TARGET_CRS': 'EPSG:4647','OUTPUT': points_out_path}
-       
-        ## Run reprojection using parameters already defined
-        processing.run('qgis:reprojectlayer', parameter_lines)
-        processing.run('qgis:reprojectlayer', parameter_points)
+            points_path = os.path.join(projectPath, "data/shapefiles/points.shp")
+            points_out_path = os.path.join(projectPath, "data/shapefiles/points_32N.shp")
+            parameter_points = {'INPUT': points_path, 'TARGET_CRS': 'EPSG:4647','OUTPUT': points_out_path}
+        
+            ## Run reprojection using parameters already defined
+            processing.run('qgis:reprojectlayer', parameter_lines)
+            processing.run('qgis:reprojectlayer', parameter_points)
+            
+            print("DONE: Reprojecting Shapefiles.")
+        
+        except:
+            print("ERROR: Reprojecting Shapefiles.")
 
 
     # Function for adding a new column in a shapefile and filling it with data from the csv file.
@@ -96,44 +111,54 @@ class data_preprocessing():
     # Function used to add fields to shapefile to enter computated measures
     def add_fields_to_shapefile(self, projectPath):
         
-        # Parsing SHP file and accessing attributes
-        relativeShapeFilePath = "data/shapefiles/lines_32N.shp"
-        shpFile = os.path.join(projectPath, relativeShapeFilePath)
-        layer = QgsVectorLayer(shpFile, "working_layer", "ogr")
-        self.layerCopy =  QgsVectorLayer(layer.source(), layer.name(), layer.providerType())
+        print("Adding fields to Shapefile.")
+        try:
+            # Parsing SHP file and accessing attributes
+            relativeShapeFilePath = "data/shapefiles/lines_32N.shp"
+            shpFile = os.path.join(projectPath, relativeShapeFilePath)
+            layer = QgsVectorLayer(shpFile, "working_layer", "ogr")
+            self.layerCopy =  QgsVectorLayer(layer.source(), layer.name(), layer.providerType())
 
-        # Adding sex field
-        self.add_fields_with_value("sex", 1, 4)
-
-        # Adding deploy_on field
-        self.add_fields_with_value("deploy_on", 2, 1)
-
-        # Adding deploy_off field
-        self.add_fields_with_value("deploy_off", 3, 2)
-
-        # Adding yearly distance field
-        self.add_empty_fields("yearly_distance", 4)
-
-        # Adding average height field
-        self.add_empty_fields("avg_height", 5)
-
-        # Adding average speed field
-        self.add_empty_fields("avg_speed", 6)
+            # Adding sex field
+            self.add_fields_with_value("sex", 1, 4)
+            # Adding deploy_on field
+            self.add_fields_with_value("deploy_on", 2, 1)
+            # Adding deploy_off field
+            self.add_fields_with_value("deploy_off", 3, 2)
+            # Adding yearly distance field
+            self.add_empty_fields("yearly_distance", 4)
+            # Adding average height field
+            self.add_empty_fields("avg_height", 5)
+            # Adding average speed field
+            self.add_empty_fields("avg_speed", 6)
 
 
-        # Add shapefile to project as new layer with edited fields
-        QgsProject.instance().addMapLayer(self.layerCopy)
+            # Add shapefile to project as new layer with edited fields
+            QgsProject.instance().addMapLayer(self.layerCopy)
+
+            print("DONE: Adding fields to Shapefile.")
+        
+        except:
+            print("ERROR: Adding fields to Shapefile.")
 
 
     # Function used to delete entries with missing fields from shapefile
     def delete_empty_features(self):
-        caps = self.layerCopy.dataProvider().capabilities()
-        deleteFeaturesIds = []
-        for feat in self.layerCopy.getFeatures():
-            attr = feat.attributes()
-            if not attr[1] or not attr[2] or not attr[3]:
-                if caps & self.layerCopy.dataProvider().DeleteFeatures:
-                    deleteFeaturesIds.append(feat.id())
-                
-        self.layerCopy.dataProvider().deleteFeatures(deleteFeaturesIds)
-        QgsProject.instance().addMapLayer(self.layerCopy)
+        
+        print("Deleting empty Features.")
+        try:
+            caps = self.layerCopy.dataProvider().capabilities()
+            deleteFeaturesIds = []
+            for feat in self.layerCopy.getFeatures():
+                attr = feat.attributes()
+                if not attr[1] or not attr[2] or not attr[3]:
+                    if caps & self.layerCopy.dataProvider().DeleteFeatures:
+                        deleteFeaturesIds.append(feat.id())
+                    
+            self.layerCopy.dataProvider().deleteFeatures(deleteFeaturesIds)
+            QgsProject.instance().addMapLayer(self.layerCopy)
+            
+            print("DONE: Deleting empty Features.")
+        
+        except:
+            print("ERROR: Deleting empty Features.")
