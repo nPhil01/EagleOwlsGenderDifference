@@ -407,3 +407,16 @@ class data_processing():
         self.make_predictions(self.data_array[:,0], self.data_array[:,3], self.data_array[:,1], "Average travel height", "ID", "Height [m]", 2)
         ### Speed
         self.make_predictions(self.data_array[:,0], self.data_array[:,4], self.data_array[:,1], "Average travel speed", "ID", "Speed [km/h]", 3)
+        
+    def export_layer(self):
+        export_path = os.path.join(projectPath, "data/shapefiles/working_layer.shp")
+        layer_writer = QgsVectorFileWriter.writeAsVectorFormat(self.layer_n, export_path, "utf-8", self.layer_n.crs(), "ESRI Shapefile")
+ 
+    
+pro = data_processing()
+pro.setup_processing(projectPath)
+pro.calc_distance_differences()
+pro.prepare_predictions() 
+pro.predict()
+pro.calculate_height_speed_differences(projectPath)
+pro.export_layer()

@@ -35,7 +35,9 @@ def initiate():
             shutil.copy(copyPath + "data_processing.py" , "/home/" + getpass.getuser() + "/.local/share/QGIS/QGIS3/profiles/default/python/plugins")
             shutil.copy(copyPath + "visualization.py" , "/home/" + getpass.getuser() + "/.local/share/QGIS/QGIS3/profiles/default/python/plugins")
 
-            print("Your scripts were placed in the right directory and renewed.")
+            if os.path.exists("/home/" + getpass.getuser() + "/.local/share/QGIS/QGIS3/profiles/default/python/plugins/setup.py"):
+                print("Your scripts were placed in the right directory and renewed.")
+
         except:
             print("Could not place your scripts.")  
 
@@ -54,8 +56,10 @@ def initiate():
             shutil.copy(copyPath + "analysis.py" , "C:/Users/" + getpass.getuser() + "/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins")
             shutil.copy(copyPath + "data_preprocessing.py" , "C:/Users/" + getpass.getuser() + "/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins")
             shutil.copy(copyPath + "data_processing.py" , "C:/Users/" + getpass.getuser() + "/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins") 
-            print("Your scripts were placed in the right directory and renewed.")
             
+            if os.path.exists("C:/Users/" + getpass.getuser() + "/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins/setup.py"):
+                print("Your scripts were placed in the right directory and renewed.")
+
         except:
             print("Could not place your scripts.")
             
