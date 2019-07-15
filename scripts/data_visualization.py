@@ -1,18 +1,17 @@
 import ogr, os
 import time, datetime
 import matplotlib as mpl
+import qgis.utils
+from qgis.core import *
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 
+class data_visualization():
 
-class visualizaiton():
-
-    def createBoxplots():
-        projectPath = QgsProject.instance().fileName()
-        projectPath = projectPath[:-19]
+    def createBoxplots(self, projectPath):
         relativeShapeFilePath = "./data/shapefiles/lines_32N.shp"
         shpFile = os.path.join(projectPath, relativeShapeFilePath)
-        layer = QgsVectorLayer(shpFile, "working_layer", "ogr")
+        self.layer = QgsVectorLayer(shpFile, "working_layer", "ogr")
 
         # create empty arrays for displaying differences between females and males
         femaleSpeed = []
@@ -24,7 +23,7 @@ class visualizaiton():
         colors = ['blue', 'red']
 
         # filling arrays
-        for feat in layer.getFeatures():
+        for feat in self.layer.getFeatures():
             if (feat["sex"] == "f"):
                 femaleSpeed.append(float(feat["avg_speed"]))
                 femaleHeight.append(float(feat["avg_height"]))
@@ -148,7 +147,7 @@ class visualizaiton():
         ax3.set_facecolor('xkcd:ivory')
         plt.show()
 
-    def createSpaceTimeCubeForAllOwls():
+    def createSpaceTimeCubeForAllOwls(self, projectPath):
         '''
         creates space time cube for all owls from shapefile
 
@@ -163,10 +162,6 @@ class visualizaiton():
         Latest stable version: 0.2
         '''
 
-        # takes path of the finalAssignment qgis project
-        projectPath = QgsProject.instance().fileName()
-        # removes finalAssignment.gqz from project Path
-        projectPath = projectPath[:-20]
         relativeFilePath = "data/shapefiles/points.shp"
         in_path = os.path.join(projectPath, relativeFilePath)
 
@@ -182,12 +177,12 @@ class visualizaiton():
         fig = plt.figure()
         ax = fig.gca(projection='3d')
 
-        # Create layer from data source
+        # Create self.layer from data source
         if data_source is None:
             print ("Could not open " + in_path)
         else:
             print ("Opened " + in_path)
-            layer = data_source.GetLayer()  # (4)  # 0 - waypoints, 1 - routes, 2 - tracks, 3 - route points, 4 - track points
+            self.layer = data_source.GetLayer()  # (4)  # 0 - waypoints, 1 - routes, 2 - tracks, 3 - route points, 4 - track points
 
         # Get time and spatial data from GPX dynamically and plot
         x = []  # Latitude
@@ -198,7 +193,7 @@ class visualizaiton():
         DateTimeArray = []  # Python datetime object of each point
         schema = []
 
-        ldefn = layer.GetLayerDefn()
+        ldefn = self.layer.GetLayerDefn()
         for n in range(ldefn.GetFieldCount()):
             fdefn = ldefn.GetFieldDefn(n)
             schema.append(fdefn.name)
@@ -209,7 +204,7 @@ class visualizaiton():
             print ("No time field found")
 
         try:
-            for feat in layer:
+            for feat in self.layer:
                 pt = feat.geometry()
                 x.append(pt.GetX())
                 y.append(pt.GetY())
@@ -259,7 +254,3 @@ class visualizaiton():
         #    plt.pause(.001)
 
         print ("DONE")
-
-
-visualizaiton.createBoxplots()
-visualizaiton.createSpaceTimeCubeForAllOwls()
