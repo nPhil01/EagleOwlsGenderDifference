@@ -15,17 +15,17 @@ class data_preprocessing():
 
         print("Preprocessing CSV file.")
         try: 
-            ### Path to local csv file
+            # Path to local csv file
             relativeFilePath = "data/csv/eagle_owl.csv" 
-            ### Concatenate both to form full path
+            # Concatenate both to form full path
             csvPath = os.path.join(projectPath, relativeFilePath)
 
             # Preprocess CSV
             with open(csvPath) as csvfile:
                 data = np.array(list(csv.reader(csvfile, delimiter=",")))
-            ### Drop all columns except for declared indices
+            # Drop all columns except for declared indices
             self.reduced_data = data[:,[0,3,4,8,10,]]  
-            ### Drop rows with empty fields
+            # Drop rows with empty fields
             self.reduced_data = np.delete(self.reduced_data,[4,18] ,axis=0,)  
             
             print("DONE: Preprocessing CSV file.")
@@ -41,7 +41,7 @@ class data_preprocessing():
         print("Reprojecting shapefiles.")
         try:
             # Reproject data to UTM 32N
-            ### Define reprojection parameters
+            # Define reprojection parameters
             lines_path = os.path.join(projectPath, "data/shapefiles/lines.shp")
             lines_out_path = os.path.join(projectPath, "data/shapefiles/lines_32N.shp")
             parameter_lines = {'INPUT': lines_path, 'TARGET_CRS': 'EPSG:4647', 'OUTPUT': lines_out_path}
@@ -50,7 +50,7 @@ class data_preprocessing():
             points_out_path = os.path.join(projectPath, "data/shapefiles/points_32N.shp")
             parameter_points = {'INPUT': points_path, 'TARGET_CRS': 'EPSG:4647','OUTPUT': points_out_path}
         
-            ## Run reprojection using parameters already defined
+            # Run reprojection using parameters already defined
             processing.run('qgis:reprojectlayer', parameter_lines)
             processing.run('qgis:reprojectlayer', parameter_points)
             
@@ -88,7 +88,7 @@ class data_preprocessing():
         self.layerCopy.dataProvider().changeAttributeValues(updates)
         self.layerCopy.updateFields()
 
-    #Function for creating an empty column in the shapefile.
+    # Function for creating an empty column in the shapefile.
     def add_empty_fields(self, fieldName, fieldIndex):
         nAttributes = 0
         # First add the required field 

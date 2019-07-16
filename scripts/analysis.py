@@ -11,25 +11,25 @@ from sys import platform
 
 print("\nSetting up required environment:")
 try:
-    ### Initiate global variable projectPath
+    # Initiate global variable projectPath
     print("Initiating global variable projectPath")
     global projectPath
     projectPath = QgsProject.instance().fileName()
-    ### Removes finalAssignment.gqz from project Path
+    # Removes finalAssignment.gqz from project Path
     projectPath = projectPath[:-19]
     print("Your projectPath is: \"" + projectPath + "\"")
 
     global copyPath
     copyPath = os.path.join(projectPath, "scripts/")
 
-    ### Determine whether user's OS is Linux or MacOS 
+    # Determine whether user's OS is Linux or MacOS 
     if platform == "darwin" or platform == "linux" or platform == "linux2":
         
-        ### Check if folder contiaining scripts already exist, if so delete it and make a new one
+        # Check if folder contiaining scripts already exist, if so delete it and make a new one
         if not(os.path.exists("/home/" + getpass.getuser() + "/.local/share/QGIS/QGIS3/profiles/default/python/plugins")):
             os.makedirs("/home/" + getpass.getuser() + "/.local/share/QGIS/QGIS3/profiles/default/python/plugins")
 
-        ### Try to copy the scripts so QGIS recognizes them
+        # Try to copy the scripts so QGIS recognizes them
         try:
             shutil.copy(copyPath + "__init__.py" , "/home/" + getpass.getuser() + "/.local/share/QGIS/QGIS3/profiles/default/python/plugins")
             shutil.copy(copyPath + "analysis.py" , "/home/" + getpass.getuser() + "/.local/share/QGIS/QGIS3/profiles/default/python/plugins")
@@ -37,7 +37,7 @@ try:
             shutil.copy(copyPath + "data_processing.py" , "/home/" + getpass.getuser() + "/.local/share/QGIS/QGIS3/profiles/default/python/plugins")
             shutil.copy(copyPath + "visualization.py" , "/home/" + getpass.getuser() + "/.local/share/QGIS/QGIS3/profiles/default/python/plugins")
 
-            ### Check if one of the scripts is found in the plugin directory 
+            # Check if one of the scripts is found in the plugin directory 
             if os.path.exists("/home/" + getpass.getuser() + "/.local/share/QGIS/QGIS3/profiles/default/python/plugins/analysis.py"):
                 print("Your scripts were placed in the right directory and renewed.")
             else:
@@ -46,14 +46,14 @@ try:
         except:
             raise EnvironmentError("Could not place your scripts.") 
 
-    ### Determine whether user's OS is Windows
+    # Determine whether user's OS is Windows
     elif platform == "win32":
 
-        ### Check if folder contiaining scripts already exist, if so delete it and make a new one
+        # Check if folder contiaining scripts already exist, if so delete it and make a new one
         if not(os.path.exists("C:/Users/" + getpass.getuser() + "/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins")):
             os.makedirs("C:/Users/" + getpass.getuser() + "/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins")
        
-        ### Try to copy the scripts so QGIS recognizes them
+        # Try to copy the scripts so QGIS recognizes them
         try:
             shutil.copy(copyPath + "__init__.py" , "C:/Users/" + getpass.getuser() + "/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins")
             shutil.copy(copyPath + "analysis.py" , "C:/Users/" + getpass.getuser() + "/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins")
@@ -61,7 +61,7 @@ try:
             shutil.copy(copyPath + "data_processing.py" , "C:/Users/" + getpass.getuser() + "/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins") 
             shutil.copy(copyPath + "data_visualization.py" , "C:/Users/" + getpass.getuser() + "/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins") 
             
-            ### Check if one of the scripts is found in the plugin directory 
+            # Check if one of the scripts is found in the plugin directory 
             if os.path.exists("C:/Users/" + getpass.getuser() + "/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins/analysis.py"):
                 print("Your scripts were placed in the right directory and renewed.")
             else:
@@ -71,7 +71,7 @@ try:
             raise EnvironmentError("Could not place your scripts.")
 
 
-    ### Import custom modules now to avoid import errors
+    # Import custom modules now to avoid import errors
     print("Now importing custom modules.")
     try:
         from data_processing import data_processing
@@ -81,7 +81,7 @@ try:
     except:
         raise ImportError("Custom modules could not be imported.")
 
-    ### Afterwards setup is finished
+    # Afterwards setup is finished
     print("Setup successfully completed.\n")
 
 except:
@@ -105,7 +105,7 @@ def run_custom_preprocessing():
 
 # Bundling all processing functions into one
 def run_custom_processing():
-    ### Skip costly computations if shapefile already exists
+    # Skip costly computations if shapefile already exists
         print("Processing started:")
         try:
             pro = data_processing()
@@ -132,6 +132,7 @@ def run_custom_visualization():
         raise RuntimeError("Error encountered while visualizing data.")
 
 
+# Run functions to execute analysis
 run_custom_preprocessing()
 run_custom_processing()
 run_custom_visualization()
