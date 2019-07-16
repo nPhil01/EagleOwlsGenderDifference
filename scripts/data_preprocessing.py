@@ -7,7 +7,6 @@ from osgeo import ogr
 from qgis.core import *
 from qgis.PyQt.QtCore import *
 
-
 # Class implementing the prepocessing part of the project
 class data_preprocessing():
 
@@ -39,7 +38,7 @@ class data_preprocessing():
     # Allows for proper distance calculations
     def reproject_shapefiles(self, projectPath):
         
-        print("Reprojecting Shapefiles.")
+        print("Reprojecting shapefiles.")
         try:
             # Reproject data to UTM 32N
             ### Define reprojection parameters
