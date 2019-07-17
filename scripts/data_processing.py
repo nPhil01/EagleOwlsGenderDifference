@@ -8,6 +8,8 @@ from qgis.core import *
 from numpy import vstack
 from datetime import datetime
 import matplotlib.pyplot as plt
+#change background-color of plots inside axis
+plt.rcParams['axes.facecolor'] = 'ivory'
 
 # Class implementing the prepocessing part of the project
 class data_processing():
@@ -429,6 +431,7 @@ class data_processing():
             plt.scatter(x_array, y_array, c = sex_array, cmap = matplotlib.colors.ListedColormap(colors))
             # Plot everything
             plt.plot(x_array, predict(x_array))
+
             # Show plot
             plt.show()
 
