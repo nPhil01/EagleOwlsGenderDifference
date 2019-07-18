@@ -163,7 +163,7 @@ class data_processing():
                 distance_sex = "females"
             # Calculate difference
             delta_distance = abs(round(avg_distance_f-avg_distance_m, 3))
-            print("Distance difference between sex-based averages is: " +str(round(delta_distance/1000, 3)) + " km, with " + str(distance_sex) + " being in the lead")
+            print("Distance difference between sex-based averages is: " + str(round(delta_distance/1000, 3)) + " km, with " + str(distance_sex) + " being in the lead")
         
             print("DONE: Calculating distance differences.")
 
@@ -364,7 +364,9 @@ class data_processing():
                 if attributes[1] in ["f"]:
                     sex_array[index] = 1
 
-                distance_array[index] = attributes[4]
+                attributes[4] = (round(float(attributes[4])/1000, 3))
+
+                distance_array[index] =  attributes[4]
                 height_array[index] = attributes[5]
                 speed_array[index] = attributes[6]
 
@@ -446,11 +448,11 @@ class data_processing():
         print("Predicting.")
         try:
             # Distance
-            self.make_predictions(self.data_array[:,0], self.data_array[:,2], self.data_array[:,1], "Average distance traveled yearly", "ID", "Distance traveled [m]", 1)
+            self.make_predictions(self.data_array[:,0], self.data_array[:,2], self.data_array[:,1], "Average travelled Distance", "ID", "Distance [km]", 1)
             # Height
-            self.make_predictions(self.data_array[:,0], self.data_array[:,3], self.data_array[:,1], "Average travel height", "ID", "Height [m]", 2)
+            self.make_predictions(self.data_array[:,0], self.data_array[:,3], self.data_array[:,1], "Average travelled Height", "ID", "Height [m]", 2)
             # Speed
-            self.make_predictions(self.data_array[:,0], self.data_array[:,4], self.data_array[:,1], "Average travel speed", "ID", "Speed [km/h]", 3)
+            self.make_predictions(self.data_array[:,0], self.data_array[:,4], self.data_array[:,1], "Average travelled Speed", "ID", "Speed [km/h]", 3)
 
             print("DONE: Predicting.")
 

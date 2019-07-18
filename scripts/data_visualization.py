@@ -43,8 +43,8 @@ class data_visualization():
             # Create plot for average speed
             data = [maleSpeed, femaleSpeed]
             fig1, ax1 = plt.subplots()
-            ax1.set_title('Average Speed of Male and Female')
-            ax1.set_ylabel('Average Speed [km/h]')
+            ax1.set_title('Average travelled Speed of Male and Female')
+            ax1.set_ylabel('Speed [km/h]')
             ax1.yaxis.grid(True)
 
             # Add patch_artist=True option to ax.boxplot() to get fill color
@@ -80,8 +80,8 @@ class data_visualization():
             # Create plot for average distance
             data = [maleDis, femaleDis]
             fig2, ax2 = plt.subplots()
-            ax2.set_title('Average Distance travelled per year of Male and Female')
-            ax2.set_ylabel('Average distance travelled [km]')
+            ax2.set_title('Average travelled Distance of Male and Female')
+            ax2.set_ylabel('Distance [km]')
             ax2.yaxis.grid(True)
 
             # Add patch_artist=True option to ax.boxplot() to get fill color
@@ -116,8 +116,8 @@ class data_visualization():
             # Create plot for average height
             data = [maleHeight, femaleHeight]
             fig3, ax3 = plt.subplots()
-            ax3.set_title('Average Height of Male and Female')
-            ax3.set_ylabel('Average Height [m]')
+            ax3.set_title('Average travelled Height of Male and Female')
+            ax3.set_ylabel('Height [m]')
             ax3.yaxis.grid(True)
 
             # Add patch_artist=True option to ax.boxplot() to get fill color
