@@ -8,12 +8,13 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
+
 # Class used implement the advanced visualization
 class data_visualization():
 
     # Function used to create boxplots of statistical measures
     def createBoxplots(self, projectPath):
-        
+
         print("Creating boxplots.")
         try:
             relativeShapeFilePath = "./data/shapefiles/lines_32N.shp"
@@ -27,6 +28,7 @@ class data_visualization():
             maleHeight = []
             femaleDis = []
             maleDis = []
+            # color code = male:blue; female:red
             colors = ['blue', 'red']
 
             # Filling arrays
@@ -156,17 +158,15 @@ class data_visualization():
         except:
             raise RuntimeError("Error encountered during creation of boxplots.")
 
-
     # Function used to build Space-Time Cubes for owl tracks
     def createSpaceTimeCubeForAllOwls(self, projectPath):
         '''
-        creates space time cube for all owls from shapefile
+        creates space time cube for two owls from shapefile with specified ID
 
         Based on:
         Author: Nimrod Gavish
         Maintainer: ngavish
         Owners: 0342120
-        Tags: 3d , gpx , matplotlib
         Plugin home page: https://github.com/Nimrod51/GPX-To-SpaceTimeCube
         Tracker: Browse and report bugs
         Code repository: https://github.com/Nimrod51/GPX-To-SpaceTimeCube
@@ -180,32 +180,21 @@ class data_visualization():
 
             # Read shapefile Layer
             driver = ogr.GetDriverByName('ESRI Shapefile')
-            data_source = driver.Open(in_path, 0)
 
             # Open shaepfileLayer
             data_source = driver.Open(in_path, 0)
 
             # Plot parameters
             mpl.rcParams['legend.fontsize'] = 10
-            fig = plt.figure()
-            ax = fig.gca(projection='3d')
 
             # Create self.layer from data source
             if data_source is None:
                 print ("Could not open " + in_path)
             else:
                 print ("Opened " + in_path)
-                self.layer = data_source.GetLayer()  # (4)  # 0 - waypoints, 1 - routes, 2 - tracks, 3 - route points, 4 - track points
+                self.layer = data_source.GetLayer()
 
-            # Get time and spatial data from GPX dynamically and plot
-            x = []  # Latitude
-            y = []  # Latitude
-            z = []  # Time in minutes since start
-            elapsedTime = []  # Time in seconds since epoch
-            DTArray = []  # Array of python strings
-            DateTimeArray = []  # Python datetime object of each point
             schema = []
-
             ldefn = self.layer.GetLayerDefn()
             for n in range(ldefn.GetFieldCount()):
                 fdefn = ldefn.GetFieldDefn(n)
@@ -217,56 +206,134 @@ class data_visualization():
                 print ("No time field found")
 
             try:
+                idIndex = schema.index('ind_ident')
+            except ValueError:
+                print ("No id field found")
+
+            idArray = []
+            try:
+                animalId = ""
                 for feat in self.layer:
-                    pt = feat.geometry()
-                    x.append(pt.GetX())
-                    y.append(pt.GetY())
-                    dateTime = feat.GetField(timeIndex)
+                    if (animalId != feat.GetField(idIndex)):
+                        animalId = feat.GetField(idIndex)
+                        idArray.append(animalId)
+            except:
+                print("no animal ID")
+            self.layer.ResetReading()
 
-                    try:
-                        DT = datetime.datetime.strptime(dateTime, "%Y-%m-%d %H:%M:%S")
-                    except ValueError:
-                        DT = datetime.datetime.strptime(dateTime, "%Y-%m-%d %H:%M:%S.%f+00")
-                    DateTimeArray.append(DT)
-                    SSE = time.mktime(DT.timetuple())  # Seconds since epoch
-                    elapsedTime.append(SSE)
-                    DTArray.append(DT.strftime("%H:%M:%S"))
 
-            except TypeError:
-                print ("Time field does contain none or invalid dates")
+            try:
+                for id in idArray:
+                    if (id == "Eagle Owl eobs 4044, 5159 / DEW A1822"):
+                        fig = plt.figure(id)
+                        ax = fig.gca(projection='3d')
+                        print(id)
+                        x = []  # Latitude
+                        y = []  # Latitude
+                        z = []  # Time in minutes since start
+                        elapsedTime = []  # Time in seconds since epoch
+                        DTArray = []  # Array of python strings
+                        DateTimeArray = []  # Python datetime object of each point
+                        try:
+                            for feat in self.layer:
+                                if (id == feat.GetField(idIndex)):
+                                    # Get time and spatial data from shp dynamically and plot
 
-            # Create sub title for plot
-            title = DateTimeArray[0].strftime("%Y/%m/%d") + " " + DTArray[0] + " to " + DateTimeArray[-1].strftime(
-                "%Y/%m/%d") + " " + DTArray[-1]
+                                    pt = feat.geometry()
+                                    x.append(pt.GetX())
+                                    y.append(pt.GetY())
+                                    dateTime = feat.GetField(timeIndex)
 
-            # Extract elapsed time in minutes
-            z.append(0)  # First item in elapsedTime array should be 0
-            for i in range(1, len(elapsedTime)):
-                z.append((elapsedTime[i] - elapsedTime[0]) / 86400)
+                                    try:
+                                        DT = datetime.datetime.strptime(dateTime, "%Y-%m-%d %H:%M:%S")
+                                    except ValueError:
+                                        DT = datetime.datetime.strptime(dateTime, "%Y-%m-%d %H:%M:%S.%f+00")
+                                    DateTimeArray.append(DT)
+                                    SSE = time.mktime(DT.timetuple())  # Seconds since epoch
+                                    elapsedTime.append(SSE)
+                                    DTArray.append(DT.strftime("%H:%M:%S"))
 
-            # Plot X,Y,Z
-            ax.plot(x, y, z)
+                        except TypeError:
+                            print ("Time field does contain none or invalid dates")
+                        self.layer.ResetReading()
+                        # Create sub title for plot
+                        title = DateTimeArray[0].strftime("%Y/%m/%d") + " " + DTArray[0] + " to " + DateTimeArray[
+                            -1].strftime(
+                            "%Y/%m/%d") + " " + DTArray[-1]
 
-            # Labels & Plot
-            ax.set_xlabel('Longitude')
-            ax.set_ylabel('Latitude')
-            ax.set_zlabel('Time (Days)')
-            ax.legend()
-            plt.axis("equal")
-            fig.suptitle('Space Time Cube', fontsize=12, fontweight='bold')
-            plt.title(title, loc='center')
-            plt.show()
+                        # Extract elapsed time in minutes
+                        z.append(0)  # First item in elapsedTime array should be 0
+                        for i in range(1, len(elapsedTime)):
+                            z.append((elapsedTime[i] - elapsedTime[0]) / 86400)
 
-            # Optionally save the image
-            # plt.savefig("C:/Output/SpaceTimePlot.jpg", dpi=100, format="jpg")
+                        # Plot X,Y,Z
+                        ax.plot(x, y, z, color='red')
 
-            ##Optionally animate image
-            # for angle in range(0, 360):
-            #    ax.view_init(30, angle)
-            #    plt.draw()
-            #    plt.pause(.001)
+                        # Labels & Plot
+                        ax.set_xlabel('Longitude')
+                        ax.set_ylabel('Latitude')
+                        ax.set_zlabel('Time (Days)')
+                        ax.legend()
+                        plt.axis("equal")
+                        fig.suptitle('Space Time Cube for id: 4044, 5159 / DEW A1822', fontsize=12, fontweight='bold')
+                        plt.title(title, loc='center')
 
-            print("DONE: Creating space-time cubes.")
+                    if (id == "Eagle Owl eobs1751 / DEW 25879"):
+                        fig = plt.figure(id)
+                        ax = fig.gca(projection='3d')
+                        print(id)
+                        x = []  # Latitude
+                        y = []  # Latitude
+                        z = []  # Time in minutes since start
+                        elapsedTime = []  # Time in seconds since epoch
+                        DTArray = []  # Array of python strings
+                        DateTimeArray = []  # Python datetime object of each point
+                        try:
+                            for feat in self.layer:
+                                if (id == feat.GetField(idIndex)):
+                                    # Get time and spatial data from shp dynamically and plot
 
+                                    pt = feat.geometry()
+                                    x.append(pt.GetX())
+                                    y.append(pt.GetY())
+                                    dateTime = feat.GetField(timeIndex)
+
+                                    try:
+                                        DT = datetime.datetime.strptime(dateTime, "%Y-%m-%d %H:%M:%S")
+                                    except ValueError:
+                                        DT = datetime.datetime.strptime(dateTime, "%Y-%m-%d %H:%M:%S.%f+00")
+                                    DateTimeArray.append(DT)
+                                    SSE = time.mktime(DT.timetuple())  # Seconds since epoch
+                                    elapsedTime.append(SSE)
+                                    DTArray.append(DT.strftime("%H:%M:%S"))
+
+                        except TypeError:
+                            print ("Time field does contain none or invalid dates")
+                        self.layer.ResetReading()
+                        # Create sub title for plot
+                        title = DateTimeArray[0].strftime("%Y/%m/%d") + " " + DTArray[0] + " to " + DateTimeArray[
+                            -1].strftime(
+                            "%Y/%m/%d") + " " + DTArray[-1]
+
+                        # Extract elapsed time in minutes
+                        z.append(0)  # First item in elapsedTime array should be 0
+                        for i in range(1, len(elapsedTime)):
+                            z.append((elapsedTime[i] - elapsedTime[0]) / 86400)
+
+                        # Plot X,Y,Z
+                        ax.plot(x, y, z, color='blue')
+
+                        # Labels & Plot
+                        ax.set_xlabel('Longitude')
+                        ax.set_ylabel('Latitude')
+                        ax.set_zlabel('Time (Days)')
+                        ax.legend()
+                        plt.axis("equal")
+                        fig.suptitle('Space Time Cube for id: 4044, 5159 / DEW A1822', fontsize=12, fontweight='bold')
+                        plt.title(title, loc='center')
+
+                plt.show()
+            except:
+                raise RuntimeError("Error encountered during creation of space-time cubes.")
         except:
             raise RuntimeError("Error encountered during creation of space-time cubes.")
