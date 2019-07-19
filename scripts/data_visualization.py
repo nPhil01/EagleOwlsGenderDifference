@@ -275,7 +275,7 @@ class data_visualization():
                         ax.set_zlabel('Time (Days)')
                         ax.legend()
                         plt.axis("equal")
-                        fig.suptitle('Space Time Cube for id: 4044, 5159 / DEW A1822', fontsize=12, fontweight='bold')
+                        fig.suptitle('Space Time Cube for id:' +id, fontsize=12, fontweight='bold')
                         plt.title(title, loc='center')
 
                     if (id == "Eagle Owl eobs1751 / DEW 25879"):
@@ -329,7 +329,7 @@ class data_visualization():
                         ax.set_zlabel('Time (Days)')
                         ax.legend()
                         plt.axis("equal")
-                        fig.suptitle('Space Time Cube for id: 1751 / DEW 25879', fontsize=12, fontweight='bold')
+                        fig.suptitle('Space Time Cube for id:' +id, fontsize=12, fontweight='bold')
                         plt.title(title, loc='center')
 
                 plt.show()
